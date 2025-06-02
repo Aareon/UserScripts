@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Claude Artifact Language Labels
 // @namespace    https://github.com/Aareon
-// @version      1.0
-// @description  Add programming language labels to Claude artifact titles
+// @version      1.1
+// @description  Add programming language labels to Claude artifact titles with improved TypeScript detection and UserScript support
 // @author       Aareon
 // @match        https://claude.ai/*
 // @grant        none
@@ -16,6 +16,7 @@
     const languageMap = {
         'javascript': 'JS',
         'typescript': 'TS',
+        'userscript': 'UserScript',
         'python': 'Python',
         'java': 'Java',
         'cpp': 'C++',
@@ -113,6 +114,19 @@
             border-color: rgba(97, 218, 251, 0.2);
         }
 
+        .artifact-language-badge.typescript,
+        .artifact-language-badge.ts {
+            background: rgba(49, 120, 198, 0.1);
+            color: rgb(49, 120, 198);
+            border-color: rgba(49, 120, 198, 0.2);
+        }
+
+        .artifact-language-badge.userscript {
+            background: rgba(255, 140, 0, 0.1);
+            color: rgb(255, 140, 0);
+            border-color: rgba(255, 140, 0, 0.2);
+        }
+
         /* Dark mode adjustments */
         @media (prefers-color-scheme: dark) {
             .artifact-language-badge {
@@ -133,8 +147,175 @@
         document.head.appendChild(style);
     }
 
+    // Check for UserScript patterns
+    function isUserScript(codeContent) {
+        // UserScript header block patterns
+        const userScriptPatterns = [
+            // UserScript header block
+            /\/\/\s*==UserScript==/,
+            /\/\/\s*@name\s+/,
+            /\/\/\s*@namespace\s+/,
+            /\/\/\s*@version\s+/,
+            /\/\/\s*@description\s+/,
+            /\/\/\s*@author\s+/,
+            /\/\/\s*@match\s+/,
+            /\/\/\s*@include\s+/,
+            /\/\/\s*@grant\s+/,
+            /\/\/\s*@require\s+/,
+            /\/\/\s*@resource\s+/,
+            /\/\/\s*@run-at\s+/,
+            /\/\/\s*@license\s+/,
+            /\/\/\s*==\/UserScript==/
+        ];
+
+        // Check for UserScript-specific patterns
+        let userScriptMatches = 0;
+        for (const pattern of userScriptPatterns) {
+            if (pattern.test(codeContent)) {
+                userScriptMatches++;
+            }
+        }
+
+        // Strong indicators - if we find the header markers or multiple directives
+        if (codeContent.includes('==UserScript==') || 
+            codeContent.includes('==/UserScript==') || 
+            userScriptMatches >= 3) {
+            return true;
+        }
+
+        // Also check for common UserScript APIs
+        const userScriptAPIs = [
+            /GM_setValue/,
+            /GM_getValue/,
+            /GM_deleteValue/,
+            /GM_listValues/,
+            /GM_addStyle/,
+            /GM_getResourceText/,
+            /GM_getResourceURL/,
+            /GM_openInTab/,
+            /GM_xmlhttpRequest/,
+            /GM_notification/,
+            /GM_setClipboard/,
+            /GM_info/,
+            /unsafeWindow/
+        ];
+
+        let apiMatches = 0;
+        for (const pattern of userScriptAPIs) {
+            if (pattern.test(codeContent)) {
+                apiMatches++;
+            }
+        }
+
+        // If we find multiple UserScript APIs, it's likely a UserScript
+        if (apiMatches >= 2) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Comprehensive TypeScript detection function
+    function isTypeScriptCode(codeContent) {
+        // TypeScript-specific patterns based on official documentation and research
+        const tsPatterns = [
+            // Type annotations with colon syntax
+            /\w+\s*:\s*(string|number|boolean|any|unknown|void|never|object)\b/,
+            /\w+\s*:\s*\w+\[\]/,  // Array type annotations like string[]
+            
+            // Generic syntax with angle brackets
+            /\<[A-Z][A-Za-z0-9]*(\s*,\s*[A-Z][A-Za-z0-9]*)*\>/,
+            /\w+\<\w+\>/,  // Generic function calls or type usage
+            
+            // Interface declarations
+            /interface\s+[A-Za-z][A-Za-z0-9]*\s*\{/,
+            /interface\s+[A-Za-z][A-Za-z0-9]*\s*\<.*?\>\s*\{/, // Generic interfaces
+            
+            // Type alias declarations
+            /type\s+[A-Za-z][A-Za-z0-9]*\s*=/,
+            /type\s+[A-Za-z][A-Za-z0-9]*\s*\<.*?\>\s*=/,  // Generic type aliases
+            
+            // Enum declarations
+            /enum\s+[A-Za-z][A-Za-z0-9]*\s*\{/,
+            
+            // Class access modifiers
+            /\b(public|private|protected|readonly)\s+\w+/,
+            
+            // Function parameter and return type annotations
+            /\(\s*\w+\s*:\s*\w+/,  // Function parameters with types
+            /\)\s*:\s*(string|number|boolean|void|any|unknown|never|Promise|object)/,  // Return type annotations
+            
+            // Union types
+            /:\s*\w+\s*\|\s*\w+/,
+            
+            // Optional properties and parameters
+            /\w+\?\s*:/,  // Optional properties in interfaces/objects
+            /\w+\?\s*\)/,  // Optional function parameters
+            
+            // Advanced TypeScript patterns
+            /extends\s+\w+\s*\<.*?\>/,  // Generic extends
+            /implements\s+\w+/,  // Class implements interface
+            /keyof\s+\w+/,  // keyof operator
+            /typeof\s+\w+/,  // typeof operator for type queries
+            /namespace\s+\w+/,  // Namespace declarations
+            /declare\s+(var|let|const|function|class|interface|type|enum)/,  // Ambient declarations
+            
+            // Mapped types
+            /\[\s*\w+\s+in\s+keyof\s+\w+\s*\]/,
+            
+            // Assertion syntax
+            /as\s+(string|number|boolean|any|unknown|object|\w+)/,
+            /\<\w+\>/,  // Type assertions with angle bracket syntax
+            
+            // Import/export with types
+            /import\s+type\s+/,
+            /export\s+type\s+/,
+            
+            // Utility types
+            /\b(Partial|Required|Readonly|Record|Pick|Omit|Exclude|Extract|NonNullable|ReturnType|InstanceType)\s*\<\w+\>/
+        ];
+
+        // Check for multiple TypeScript patterns to increase confidence
+        let matchCount = 0;
+        for (const pattern of tsPatterns) {
+            if (pattern.test(codeContent)) {
+                matchCount++;
+                // If we find 2 or more distinct TypeScript patterns, it's likely TypeScript
+                if (matchCount >= 2) {
+                    return true;
+                }
+            }
+        }
+
+        // Single strong indicators that are almost exclusively TypeScript
+        const strongTsPatterns = [
+            /interface\s+\w+/,
+            /type\s+\w+\s*=/,
+            /enum\s+\w+/,
+            /\b(public|private|protected)\s+\w+/,
+            /implements\s+\w+/,
+            /namespace\s+\w+/
+        ];
+
+        for (const pattern of strongTsPatterns) {
+            if (pattern.test(codeContent)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // Detect language from code blocks in an artifact
     function detectLanguageFromArtifact(artifactElement) {
+        // Get the code content for pattern analysis first
+        const codeContent = artifactElement.textContent || '';
+
+        // Check for UserScript patterns first (most specific) - do this before checking explicit language classes
+        if (isUserScript(codeContent)) {
+            return 'userscript';
+        }
+
         // Look for code elements with language classes
         const codeElements = artifactElement.querySelectorAll('code[class*="language-"], pre[class*="language-"]');
 
@@ -143,6 +324,19 @@
             for (const className of classList) {
                 if (className.startsWith('language-')) {
                     const lang = className.replace('language-', '').toLowerCase();
+                    // Skip generic 'javascript' if we have more specific patterns to check
+                    if (lang === 'javascript') {
+                        // Check for TypeScript or other patterns first
+                        if (isTypeScriptCode(codeContent)) {
+                            return 'typescript';
+                        }
+                        // Check for React
+                        if (codeContent.includes('React') || codeContent.includes('useState') || codeContent.includes('useEffect') || codeContent.includes('jsx')) {
+                            return 'react';
+                        }
+                        // If no other patterns found, return javascript
+                        return 'javascript';
+                    }
                     return lang;
                 }
             }
@@ -154,8 +348,12 @@
             return 'html';
         }
 
+        // Check for TypeScript-specific patterns (check before JavaScript since TS is a superset)
+        if (isTypeScriptCode(codeContent)) {
+            return 'typescript';
+        }
+
         // Check for React components by looking for JSX-like patterns
-        const codeContent = artifactElement.textContent || '';
         if (codeContent.includes('React') || codeContent.includes('useState') || codeContent.includes('useEffect') || codeContent.includes('jsx')) {
             return 'react';
         }
