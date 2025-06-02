@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude GitHub Repository Last Commit Info
 // @namespace    https://github.com/Aareon
-// @version      1.0
+// @version      1.1
 // @description  Add last commit date information to GitHub repository thumbnails
 // @author       Aareon
 // @match        https://claude.ai/*
@@ -349,16 +349,36 @@
         });
     }
 
-    // Initialize the script
-    function init() {
-        addCSS();
-        processRepositoryThumbnails();
+    // Set up sync button click handler for immediate commit info refresh
+    function attachSyncButtonListener(syncButton) {
+        // Check if already processed to avoid duplicate listeners
+        if (syncButton.dataset.commitInfoListener) {
+            return;
+        }
+
+        syncButton.addEventListener('click', () => {
+            console.log('Sync button clicked - refreshing commit info');
+
+            // Clear the commit cache to force fresh data
+            commitCache.clear();
+
+            // Re-process all thumbnails after a short delay to allow sync to complete
+            setTimeout(() => {
+                // Remove existing commit info elements to force refresh
+                document.querySelectorAll('.github-last-commit').forEach(el => el.remove());
+                processRepositoryThumbnails();
+            }, 1000); // Wait 1 second for sync to potentially complete
+        });
+
+        // Mark as processed
+        syncButton.dataset.commitInfoListener = 'true';
     }
 
     // Set up mutation observer for dynamic content
     function setupObserver() {
         const observer = new MutationObserver((mutations) => {
             let shouldProcess = false;
+            let foundSyncButton = false;
 
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList') {
@@ -368,6 +388,29 @@
                             if (node.querySelector &&
                                 node.querySelector('[data-testid="file-thumbnail"]')) {
                                 shouldProcess = true;
+                            }
+
+                            // Check for sync button (appears on hover)
+                            // Look for the specific SVG path that indicates the sync button
+                            const syncButton = node.querySelector && node.querySelector('div[data-state] svg path[d*="M224,48V96"]');
+                            if (syncButton) {
+                                foundSyncButton = true;
+                                // Get the clickable container (the div with data-state)
+                                const clickableButton = syncButton.closest('div[data-state]');
+                                if (clickableButton && !clickableButton.dataset.commitInfoListener) {
+                                    console.log('Found sync button, attaching listener');
+                                    attachSyncButtonListener(clickableButton);
+                                }
+                            }
+
+                            // Also check if the node itself is a sync button container
+                            if (node.matches && node.matches('div[data-state]')) {
+                                const syncSvg = node.querySelector('svg path[d*="M224,48V96"]');
+                                if (syncSvg && !node.dataset.commitInfoListener) {
+                                    console.log('Found sync button container, attaching listener');
+                                    attachSyncButtonListener(node);
+                                    foundSyncButton = true;
+                                }
                             }
                         }
                     });
@@ -383,6 +426,62 @@
         observer.observe(document.body, {
             childList: true,
             subtree: true
+        });
+
+        // Also set up a secondary observer specifically for thumbnail containers
+        // to catch sync buttons that appear on hover
+        const thumbnailObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            // Look for sync button in newly added nodes
+                            const syncButton = node.querySelector && node.querySelector('div[data-state] svg path[d*="M224,48V96"]');
+                            if (syncButton) {
+                                const clickableButton = syncButton.closest('div[data-state]');
+                                if (clickableButton && !clickableButton.dataset.commitInfoListener) {
+                                    console.log('Found sync button via thumbnail observer, attaching listener');
+                                    attachSyncButtonListener(clickableButton);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        // Observe all thumbnail containers for sync button appearances
+        const checkThumbnailContainers = () => {
+            const thumbnails = document.querySelectorAll('[data-testid="file-thumbnail"]');
+            thumbnails.forEach(thumbnail => {
+                if (!thumbnail.dataset.syncObserved) {
+                    thumbnailObserver.observe(thumbnail, {
+                        childList: true,
+                        subtree: true
+                    });
+                    thumbnail.dataset.syncObserved = 'true';
+                }
+            });
+        };
+
+        // Initial check and periodic re-check for new thumbnails
+        checkThumbnailContainers();
+        setInterval(checkThumbnailContainers, 2000);
+    }
+
+    // Initialize the script
+    function init() {
+        addCSS();
+        processRepositoryThumbnails();
+
+        // Check for any existing sync buttons
+        const existingSyncButtons = document.querySelectorAll('div[data-state] svg path[d*="M224,48V96"]');
+        existingSyncButtons.forEach(svg => {
+            const clickableButton = svg.closest('div[data-state]');
+            if (clickableButton && !clickableButton.dataset.commitInfoListener) {
+                console.log('Found existing sync button, attaching listener');
+                attachSyncButtonListener(clickableButton);
+            }
         });
     }
 
