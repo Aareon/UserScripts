@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Claude Artifact Line Numbers
 // @namespace    https://github.com/Aareon
-// @version      1.0
-// @description  Add line numbers to code blocks in Claude artifacts
+// @version      1.1
+// @description  Add line numbers to Claude artifacts that hide during generation and return when complete
 // @author       Aareon
 // @match        https://claude.ai/*
 // @grant        none
@@ -12,9 +12,18 @@
 (function () {
     'use strict';
 
+    // Simple debounce function
+    function debounce(func, delay) {
+        let timeoutId;
+        return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
     // CSS for line numbers
     const lineNumberCSS = `
-        .line-numbers-wrapper {
+        .claude-line-numbers-wrapper {
             position: relative;
             overflow: auto;
             display: flex;
@@ -22,7 +31,11 @@
             border-radius: inherit;
         }
 
-        .line-numbers {
+        .claude-line-numbers-wrapper.generation-active {
+            display: none !important;
+        }
+
+        .claude-line-numbers {
             width: 50px;
             background: rgba(0, 0, 0, 0.1);
             border-right: 1px solid rgba(255, 255, 255, 0.2);
@@ -39,14 +52,13 @@
             padding: 1em 0.5em 1em 0.25em;
         }
 
-        .line-numbers-content {
+        .claude-line-numbers-content {
             flex: 1;
             min-width: 0;
             overflow: hidden;
         }
 
-        /* Reset padding on the code container to prevent double padding */
-        .line-numbers-wrapper .code-block__code {
+        .claude-line-numbers-wrapper .code-block__code {
             margin: 0 !important;
             padding-left: 0.5em !important;
             padding-right: 1em !important;
@@ -54,10 +66,20 @@
             padding-bottom: 1em !important;
         }
 
-        .line-numbers-content code {
+        .claude-line-numbers-content code {
             padding: 0 !important;
         }
+
+        /* Hide original code blocks when wrapped */
+        .claude-line-numbers-wrapper + .code-block__code {
+            display: none !important;
+        }
     `;
+
+    // Track generation state
+    let isGenerating = false;
+    let generationObserver = null;
+    let processedCodeBlocks = new Set();
 
     // Add CSS to page
     function addCSS() {
@@ -69,88 +91,131 @@
         document.head.appendChild(style);
     }
 
-    // Generate line numbers for a code block
-    function generateLineNumbers(codeElement) {
-        const text = codeElement.textContent || codeElement.innerText;
+    // Generate line numbers text
+    function generateLineNumbers(text) {
         const lines = text.split('\n');
-        const lineCount = lines.length;
-
-        // Handle empty last line
-        const actualLineCount = lines[lineCount - 1] === '' ? lineCount - 1 : lineCount;
+        const actualLineCount = lines[lines.length - 1] === '' ? lines.length - 1 : lines.length;
 
         const lineNumbers = [];
         for (let i = 1; i <= actualLineCount; i++) {
             lineNumbers.push(i.toString());
         }
-
         return lineNumbers.join('\n');
     }
 
-    // Add line numbers to a code block
-    function addLineNumbers(codeBlock) {
-        // Skip if already processed
-        if (codeBlock.closest('.line-numbers-wrapper')) return;
+    // Detect if Claude is currently generating
+    function detectGeneration() {
+        // Look for generation indicators
+        const generationIndicators = [
+            '.text-token-text-secondary', // Thinking indicator
+            '[data-testid="stop-button"]', // Stop button visible
+            '.animate-pulse', // Pulsing elements during generation
+            '.loading-indicator',
+            '[aria-label="Stop generating"]'
+        ];
 
-        // Skip if it's not a multi-line code block
+        for (const selector of generationIndicators) {
+            if (document.querySelector(selector)) {
+                return true;
+            }
+        }
+
+        // Check for streaming text patterns (rapid DOM changes)
+        const artifactContainers = document.querySelectorAll('[class*="artifact"], [data-artifact]');
+        for (const container of artifactContainers) {
+            // Look for span elements being added rapidly (typical of streaming)
+            const spans = container.querySelectorAll('span');
+            if (spans.length > 0) {
+                // Check if spans are being added with partial content
+                for (const span of spans) {
+                    if (span.textContent === '' || span.textContent.length < 3) {
+                        return true; // Likely mid-generation
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // Remove all line number wrappers
+    function removeAllLineNumbers() {
+        const wrappers = document.querySelectorAll('.claude-line-numbers-wrapper');
+        wrappers.forEach(wrapper => {
+            const codeContainer = wrapper.querySelector('.code-block__code');
+            if (codeContainer && wrapper.parentNode) {
+                // Move code container back to original location
+                try {
+                    wrapper.parentNode.insertBefore(codeContainer, wrapper);
+                    wrapper.parentNode.removeChild(wrapper);
+                } catch (e) {
+                    // Ignore errors during cleanup
+                }
+            }
+        });
+        processedCodeBlocks.clear();
+    }
+
+    // Add line numbers to a single code block
+    function addLineNumbersToCodeBlock(codeBlock) {
+        if (!codeBlock || processedCodeBlocks.has(codeBlock)) return;
+
         const text = codeBlock.textContent || codeBlock.innerText;
         if (!text.includes('\n')) return;
 
         const parent = codeBlock.parentElement;
         if (!parent) return;
 
-        // Find the code container (could be the parent with .code-block__code class)
         const codeContainer = codeBlock.closest('.code-block__code') || parent;
+        if (!codeContainer || codeContainer.closest('.claude-line-numbers-wrapper')) return;
 
-        // Create wrapper
-        const wrapper = document.createElement('div');
-        wrapper.className = 'line-numbers-wrapper';
+        try {
+            // Create wrapper structure
+            const wrapper = document.createElement('div');
+            wrapper.className = 'claude-line-numbers-wrapper';
 
-        // Create line numbers element
-        const lineNumbersEl = document.createElement('div');
-        lineNumbersEl.className = 'line-numbers';
-        lineNumbersEl.textContent = generateLineNumbers(codeBlock);
+            const lineNumbersEl = document.createElement('div');
+            lineNumbersEl.className = 'claude-line-numbers';
+            lineNumbersEl.textContent = generateLineNumbers(text);
 
-        // Create content wrapper
-        const contentWrapper = document.createElement('div');
-        contentWrapper.className = 'line-numbers-content';
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'claude-line-numbers-content';
 
-        // Copy styles from code container to wrapper and line numbers
-        const computedStyle = window.getComputedStyle(codeContainer);
+            // Copy essential styles
+            const computedStyle = window.getComputedStyle(codeContainer);
+            wrapper.style.fontSize = computedStyle.fontSize;
+            wrapper.style.lineHeight = computedStyle.lineHeight;
+            wrapper.style.fontFamily = computedStyle.fontFamily;
+            wrapper.style.backgroundColor = computedStyle.backgroundColor;
+            wrapper.style.borderRadius = computedStyle.borderRadius;
 
-        // Copy important styles to ensure alignment
-        const stylesToCopy = [
-            'fontSize', 'lineHeight', 'fontFamily', 'padding',
-            'backgroundColor', 'borderRadius', 'textShadow'
-        ];
+            lineNumbersEl.style.fontSize = computedStyle.fontSize;
+            lineNumbersEl.style.lineHeight = computedStyle.lineHeight;
 
-        stylesToCopy.forEach(prop => {
-            if (computedStyle[prop] && computedStyle[prop] !== 'normal') {
-                wrapper.style[prop] = computedStyle[prop];
-                lineNumbersEl.style[prop] = computedStyle[prop];
-            }
-        });
+            // Build structure
+            wrapper.appendChild(lineNumbersEl);
+            wrapper.appendChild(contentWrapper);
 
-        // Ensure line numbers have the same exact line height
-        lineNumbersEl.style.lineHeight = computedStyle.lineHeight;
-        lineNumbersEl.style.fontSize = computedStyle.fontSize;
+            // Insert wrapper and move code container
+            const containerParent = codeContainer.parentNode;
+            containerParent.insertBefore(wrapper, codeContainer);
+            contentWrapper.appendChild(codeContainer);
 
-        // Insert wrapper before the code container
-        codeContainer.parentElement.insertBefore(wrapper, codeContainer);
+            processedCodeBlocks.add(codeBlock);
 
-        // Move code container into content wrapper
-        contentWrapper.appendChild(codeContainer);
-
-        // Add elements to wrapper
-        wrapper.appendChild(lineNumbersEl);
-        wrapper.appendChild(contentWrapper);
+        } catch (error) {
+            // Silently fail to avoid disrupting Claude
+        }
     }
 
-    // Process all code blocks on the page
-    function processCodeBlocks() {
-        // Look for code elements that are likely to be in artifacts
+    // Process all code blocks on page
+    function processAllCodeBlocks() {
+        if (isGenerating) return; // Don't process during generation
+
         const codeSelectors = [
             'code.language-python',
             'code.language-javascript',
+            'code.language-typescript',
             'code.language-java',
             'code.language-cpp',
             'code.language-c',
@@ -167,59 +232,115 @@
         ];
 
         codeSelectors.forEach(selector => {
-            const codeElements = document.querySelectorAll(selector);
-            codeElements.forEach(addLineNumbers);
+            try {
+                const codeElements = document.querySelectorAll(selector);
+                codeElements.forEach(codeElement => {
+                    if (!processedCodeBlocks.has(codeElement)) {
+                        addLineNumbersToCodeBlock(codeElement);
+                    }
+                });
+            } catch (error) {
+                // Ignore errors
+            }
         });
     }
 
-    // Initialize
-    function init() {
-        addCSS();
-        processCodeBlocks();
+    // Handle generation state changes
+    function handleGenerationChange() {
+        const wasGenerating = isGenerating;
+        isGenerating = detectGeneration();
+
+        if (wasGenerating && !isGenerating) {
+            // Generation just stopped - add line numbers back
+            setTimeout(() => {
+                processAllCodeBlocks();
+            }, 1000); // Wait for DOM to stabilize
+        } else if (!wasGenerating && isGenerating) {
+            // Generation just started - remove line numbers
+            removeAllLineNumbers();
+        }
     }
 
-    // Set up mutation observer to handle dynamically added content
-    function setupObserver() {
-        const observer = new MutationObserver((mutations) => {
-            let shouldProcess = false;
+    // Debounced generation check
+    const debouncedGenerationCheck = debounce(handleGenerationChange, 100);
 
-            mutations.forEach((mutation) => {
+    // Set up generation monitoring
+    function setupGenerationMonitoring() {
+        // Monitor for generation state changes
+        generationObserver = new MutationObserver((mutations) => {
+            let shouldCheck = false;
+
+            for (const mutation of mutations) {
+                // Check for generation-related changes
                 if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach((node) => {
+                    for (const node of mutation.addedNodes) {
                         if (node.nodeType === Node.ELEMENT_NODE) {
-                            // Check if added node contains code blocks
-                            if (node.querySelector('code') || node.tagName === 'CODE') {
-                                shouldProcess = true;
+                            // Look for generation indicators or new spans
+                            if (node.matches && (
+                                node.matches('span, button, [data-testid*="stop"], [class*="pulse"]') ||
+                                node.querySelector('span, button, [data-testid*="stop"], [class*="pulse"]')
+                            )) {
+                                shouldCheck = true;
+                                break;
                             }
                         }
-                    });
+                    }
                 }
-            });
 
-            if (shouldProcess) {
-                // Delay processing to ensure DOM is stable
-                setTimeout(processCodeBlocks, 100);
+                if (shouldCheck) break;
+            }
+
+            if (shouldCheck) {
+                debouncedGenerationCheck();
             }
         });
 
-        observer.observe(document.body, {
+        generationObserver.observe(document.body, {
             childList: true,
             subtree: true
         });
     }
 
-    // Wait for page to load
+    // Initial setup
+    function init() {
+        addCSS();
+
+        // Initial generation check
+        handleGenerationChange();
+
+        // Setup monitoring
+        setupGenerationMonitoring();
+
+        // Initial processing if not generating
+        if (!isGenerating) {
+            setTimeout(processAllCodeBlocks, 2000);
+        }
+    }
+
+    // Cleanup on page unload
+    function cleanup() {
+        if (generationObserver) {
+            generationObserver.disconnect();
+        }
+    }
+
+    // Start when page is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(init, 1000); // Give Claude time to load
-            setupObserver();
+            setTimeout(init, 1000);
         });
     } else {
         setTimeout(init, 1000);
-        setupObserver();
     }
 
-    // Also run periodically to catch any missed code blocks
-    setInterval(processCodeBlocks, 3000);
+    // Cleanup on unload
+    window.addEventListener('beforeunload', cleanup);
+
+    // Periodic check for missed artifacts (only when not generating)
+    setInterval(() => {
+        if (!isGenerating && document.visibilityState === 'visible') {
+            handleGenerationChange();
+        }
+    }, 3000);
 
 })();
