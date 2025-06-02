@@ -147,57 +147,86 @@
         document.head.appendChild(style);
     }
 
-    // Check for UserScript patterns
+    // Check for UserScript patterns first (most specific)
     function isUserScript(codeContent) {
-        // UserScript header block patterns
-        const userScriptPatterns = [
-            // UserScript header block
-            /\/\/\s*==UserScript==/,
-            /\/\/\s*@name\s+/,
-            /\/\/\s*@namespace\s+/,
-            /\/\/\s*@version\s+/,
-            /\/\/\s*@description\s+/,
-            /\/\/\s*@author\s+/,
-            /\/\/\s*@match\s+/,
-            /\/\/\s*@include\s+/,
-            /\/\/\s*@grant\s+/,
-            /\/\/\s*@require\s+/,
-            /\/\/\s*@resource\s+/,
-            /\/\/\s*@run-at\s+/,
-            /\/\/\s*@license\s+/,
-            /\/\/\s*==\/UserScript==/
+        // Strong UserScript header block indicators - check for these first
+        const headerBlockPatterns = [
+            /\/\/\s*==UserScript==/i,
+            /\/\/\s*==\/UserScript==/i
         ];
 
-        // Check for UserScript-specific patterns
-        let userScriptMatches = 0;
-        for (const pattern of userScriptPatterns) {
+        // If we find either header marker, it's definitely a UserScript
+        for (const pattern of headerBlockPatterns) {
             if (pattern.test(codeContent)) {
-                userScriptMatches++;
+                return true;
             }
         }
 
-        // Strong indicators - if we find the header markers or multiple directives
-        if (codeContent.includes('==UserScript==') || 
-            codeContent.includes('==/UserScript==') || 
-            userScriptMatches >= 3) {
+        // UserScript metadata patterns (more comprehensive)
+        const userScriptDirectives = [
+            /\/\/\s*@name\s+/i,
+            /\/\/\s*@namespace\s+/i,
+            /\/\/\s*@version\s+/i,
+            /\/\/\s*@description\s+/i,
+            /\/\/\s*@author\s+/i,
+            /\/\/\s*@match\s+/i,
+            /\/\/\s*@include\s+/i,
+            /\/\/\s*@exclude\s+/i,
+            /\/\/\s*@grant\s+/i,
+            /\/\/\s*@require\s+/i,
+            /\/\/\s*@resource\s+/i,
+            /\/\/\s*@run-at\s+/i,
+            /\/\/\s*@license\s+/i,
+            /\/\/\s*@icon\s+/i,
+            /\/\/\s*@updateURL\s+/i,
+            /\/\/\s*@downloadURL\s+/i,
+            /\/\/\s*@supportURL\s+/i,
+            /\/\/\s*@homepageURL\s+/i,
+            /\/\/\s*@noframes/i,
+            /\/\/\s*@connect\s+/i
+        ];
+
+        // Count UserScript directive matches
+        let directiveMatches = 0;
+        for (const pattern of userScriptDirectives) {
+            if (pattern.test(codeContent)) {
+                directiveMatches++;
+            }
+        }
+
+        // If we find 3 or more UserScript directives, it's very likely a UserScript
+        if (directiveMatches >= 3) {
             return true;
         }
 
-        // Also check for common UserScript APIs
+        // Check for UserScript-specific APIs (Greasemonkey/Tampermonkey)
         const userScriptAPIs = [
-            /GM_setValue/,
-            /GM_getValue/,
-            /GM_deleteValue/,
-            /GM_listValues/,
-            /GM_addStyle/,
-            /GM_getResourceText/,
-            /GM_getResourceURL/,
-            /GM_openInTab/,
-            /GM_xmlhttpRequest/,
-            /GM_notification/,
-            /GM_setClipboard/,
-            /GM_info/,
-            /unsafeWindow/
+            /\bGM_setValue\b/,
+            /\bGM_getValue\b/,
+            /\bGM_deleteValue\b/,
+            /\bGM_listValues\b/,
+            /\bGM_addStyle\b/,
+            /\bGM_getResourceText\b/,
+            /\bGM_getResourceURL\b/,
+            /\bGM_openInTab\b/,
+            /\bGM_xmlhttpRequest\b/,
+            /\bGM_notification\b/,
+            /\bGM_setClipboard\b/,
+            /\bGM_info\b/,
+            /\bGM_download\b/,
+            /\bGM_log\b/,
+            /\bunsafeWindow\b/,
+            // Modern GM API
+            /\bGM\.setValue\b/,
+            /\bGM\.getValue\b/,
+            /\bGM\.deleteValue\b/,
+            /\bGM\.listValues\b/,
+            /\bGM\.getResourceUrl\b/,
+            /\bGM\.xmlHttpRequest\b/,
+            /\bGM\.notification\b/,
+            /\bGM\.setClipboard\b/,
+            /\bGM\.info\b/,
+            /\bGM\.log\b/
         ];
 
         let apiMatches = 0;
@@ -207,8 +236,28 @@
             }
         }
 
-        // If we find multiple UserScript APIs, it's likely a UserScript
-        if (apiMatches >= 2) {
+        // If we find multiple UserScript APIs plus at least one directive, it's likely a UserScript
+        if (apiMatches >= 2 || (apiMatches >= 1 && directiveMatches >= 1)) {
+            return true;
+        }
+
+        // Check for common UserScript comment patterns
+        const userScriptComments = [
+            /\/\/.*userscript/i,
+            /\/\/.*tampermonkey/i,
+            /\/\/.*greasemonkey/i,
+            /\/\/.*violentmonkey/i
+        ];
+
+        let commentMatches = 0;
+        for (const pattern of userScriptComments) {
+            if (pattern.test(codeContent)) {
+                commentMatches++;
+            }
+        }
+
+        // If we have UserScript-related comments plus directives, it's likely a UserScript
+        if (commentMatches >= 1 && directiveMatches >= 2) {
             return true;
         }
 
