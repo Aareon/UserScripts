@@ -1,0 +1,19 @@
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor-specific files
+.vscode/
+
+# Generated files
+*.log
+
+# Temp files
+*.tmp
+*.swp
+*.bak
+
+# Git patches and backups
+*.orig
+*.rej
+*.patch
