@@ -45,7 +45,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
     // Behavior-specific CSS (not shared with other scripts)
     const specificCSS = `
         .instructions-library-container {
-            ${window.ClaudeStyles.components.glassContainer}
+            ${window.ClaudeStyles.components.mainContainer}
             margin-bottom: 12px;
             overflow: hidden;
             transition: all 0.2s ease;
@@ -54,37 +54,34 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .instructions-library-header {
+            ${window.ClaudeStyles.components.containerHeader}
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 8px 12px;
-            background: color-mix(in srgb, canvas 90%, canvastext 5%);
-            border-bottom: 0.5px solid color-mix(in srgb, canvastext 30%, transparent);
             cursor: pointer;
             user-select: none;
-            backdrop-filter: blur(8px);
             transition: background 0.2s ease;
         }
 
         .instructions-library-header:hover {
-            background: color-mix(in srgb, canvas 85%, canvastext 10%);
+            background: light-dark(rgba(229, 231, 235, 0.8), rgba(75, 85, 99, 0.8));
         }
 
         .instructions-library-title {
             font-size: 12px;
             font-weight: 600;
-            color: color-mix(in srgb, canvastext 80%, transparent);
+            color: light-dark(rgb(107, 114, 128), rgb(156, 163, 175));
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
         .instructions-library-content {
+            ${window.ClaudeStyles.components.containerContent}
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
-            background: color-mix(in srgb, canvas 95%, canvastext 3%);
-            backdrop-filter: blur(8px);
         }
 
         .instructions-library-content.expanded {
@@ -107,29 +104,28 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             display: flex;
             align-items: flex-start;
             gap: 8px;
-            background: color-mix(in srgb, canvas 85%, canvastext 8%);
         }
 
         .instruction-template-card:hover {
-            background: color-mix(in srgb, canvas 80%, canvastext 12%);
+            background: light-dark(rgba(229, 231, 235, 0.8), rgba(75, 85, 99, 0.8));
             transform: translateY(-1px);
             box-shadow:
-                0 2px 8px color-mix(in srgb, canvastext 30%, transparent),
-                inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                0 2px 8px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3)),
+                inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.05));
         }
 
         .instruction-template-card:focus {
-            outline: 2px solid color-mix(in srgb, highlight 100%, transparent);
+            outline: 2px solid light-dark(rgb(59, 130, 246), rgb(59, 130, 246));
             outline-offset: 2px;
         }
 
         .instruction-template-card.selected {
-            border-color: color-mix(in srgb, highlight 60%, transparent) !important;
-            background: color-mix(in srgb, highlight 10%, canvas 90%) !important;
+            border-color: light-dark(rgba(59, 130, 246, 0.6), rgba(59, 130, 246, 0.6)) !important;
+            background: light-dark(rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.15)) !important;
             box-shadow:
-                0 2px 8px color-mix(in srgb, highlight 30%, transparent),
-                inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent),
-                0 0 0 1px color-mix(in srgb, highlight 30%, transparent);
+                0 2px 8px light-dark(rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.4)),
+                inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1)),
+                0 0 0 1px light-dark(rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.4));
         }
 
         .template-checkbox {
@@ -153,19 +149,19 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .template-checkbox-button.unchecked {
-            border-color: color-mix(in srgb, canvastext 60%, transparent);
+            border-color: light-dark(rgba(209, 213, 219, 0.8), rgba(107, 114, 128, 0.8));
             background: transparent;
         }
 
         .template-checkbox-button.unchecked:hover {
-            background: color-mix(in srgb, canvas 90%, canvastext 5%);
-            box-shadow: 0 1px 2px color-mix(in srgb, canvastext 15%, transparent);
+            background: light-dark(rgba(249, 250, 251, 0.8), rgba(55, 65, 81, 0.8));
+            box-shadow: 0 1px 2px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
         }
 
         .template-checkbox-button.checked {
-            background: color-mix(in srgb, highlight 100%, transparent);
-            border-color: color-mix(in srgb, highlight 80%, transparent);
-            box-shadow: 0 1px 2px color-mix(in srgb, canvastext 20%, transparent);
+            background: light-dark(rgb(59, 130, 246), rgb(59, 130, 246));
+            border-color: light-dark(rgba(37, 99, 235, 0.8), rgba(59, 130, 246, 0.8));
+            box-shadow: 0 1px 2px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3));
         }
 
         .template-checkbox-icon {
@@ -199,14 +195,14 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .instruction-template-card.selected .template-card-name {
-            color: color-mix(in srgb, canvastext 100%, transparent);
+            color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
             font-weight: 700;
-            text-shadow: 0 1px 2px color-mix(in srgb, canvastext 20%, transparent);
+            text-shadow: 0 1px 2px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
         }
 
         .template-card-preview {
             font-size: 9px;
-            color: color-mix(in srgb, canvastext 70%, transparent);
+            color: light-dark(rgb(107, 114, 128), rgb(156, 163, 175));
             line-height: 1.3;
             overflow: hidden;
             display: -webkit-box;
@@ -215,8 +211,8 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .instruction-template-card.selected .template-card-preview {
-            color: color-mix(in srgb, canvastext 90%, transparent);
-            text-shadow: 0 1px 2px color-mix(in srgb, canvastext 20%, transparent);
+            color: light-dark(rgb(55, 65, 81), rgb(209, 213, 219));
+            text-shadow: 0 1px 2px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
         }
 
         .template-actions {
@@ -373,24 +369,24 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .form-input:hover {
-            border-color: color-mix(in srgb, canvastext 50%, transparent);
+            border-color: light-dark(rgba(156, 163, 175, 0.9), rgba(156, 163, 175, 0.9));
             box-shadow:
-                inset 0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
-                0 1px 0 0 color-mix(in srgb, canvas 100%, transparent),
-                0 0 0 1px color-mix(in srgb, canvastext 30%, transparent);
+                inset 0 1px 3px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
+                0 1px 0 0 light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.05)),
+                0 0 0 1px light-dark(rgba(156, 163, 175, 0.3), rgba(156, 163, 175, 0.3));
         }
 
         .form-input:focus {
             outline: none;
-            border-color: color-mix(in srgb, highlight 100%, transparent);
+            border-color: light-dark(rgb(59, 130, 246), rgb(59, 130, 246));
             box-shadow:
-                inset 0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
-                0 1px 0 0 color-mix(in srgb, canvas 100%, transparent),
-                0 0 0 2px color-mix(in srgb, highlight 30%, transparent);
+                inset 0 1px 3px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
+                0 1px 0 0 light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.05)),
+                0 0 0 2px light-dark(rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.3));
         }
 
         .form-input::placeholder {
-            color: color-mix(in srgb, canvastext 60%, transparent);
+            color: light-dark(rgb(156, 163, 175), rgb(107, 114, 128));
         }
 
         .form-textarea {
@@ -468,7 +464,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(at bottom, color-mix(in srgb, highlighttext 20%, transparent), color-mix(in srgb, highlighttext 0%, transparent));
+            background: radial-gradient(at bottom, light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), light-dark(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)));
             opacity: 0;
             transition: all 200ms ease;
             transform: translateY(8px);

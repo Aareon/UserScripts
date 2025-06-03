@@ -143,7 +143,7 @@
 
             // Secondary button (theme-adaptive)
             buttonSecondary: `
-                background: light-dark(rgba(243, 244, 246, 0.8), rgba(55, 65, 81, 0.8));
+                background: light-dark(rgba(255, 255, 255, 0.9), rgba(75, 85, 99, 0.8));
                 color: light-dark(rgb(17, 24, 39), rgb(209, 213, 219));
                 border-color: light-dark(rgba(209, 213, 219, 0.8), rgba(107, 114, 128, 0.8));
                 box-shadow:
@@ -155,7 +155,7 @@
             cardBase: `
                 border: 1.5px solid light-dark(rgba(209, 213, 219, 0.8), rgba(75, 85, 99, 0.6));
                 border-radius: 8px;
-                background: light-dark(rgba(255, 255, 255, 0.9), rgba(31, 41, 55, 0.9));
+                background: light-dark(rgba(249, 250, 251, 0.9), rgba(55, 65, 81, 0.9));
                 backdrop-filter: blur(4px);
                 box-shadow:
                     0 1px 3px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
