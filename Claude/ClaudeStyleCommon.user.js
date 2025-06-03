@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude Style Common Library
 // @namespace    https://github.com/Aareon
-// @version      1.0
+// @version      1.1
 // @description  Common CSS styles and utilities for Claude.ai UserScripts
 // @author       Aareon
 // @match        https://claude.ai/*
@@ -63,28 +63,52 @@
 
         // Common CSS components
         components: {
-            // Glass morphism container (adapts to theme)
-            glassContainer: `
-                background: color-mix(in srgb, canvas 85%, transparent);
-                backdrop-filter: blur(8px);
-                border: 1.5px solid color-mix(in srgb, canvastext 20%, transparent);
+            // Main container for dialogs/panels (matches Claude's UI)
+            mainContainer: `
+                background: light-dark(rgb(255, 255, 255), rgb(31, 41, 55));
+                border: 1.5px solid light-dark(rgba(209, 213, 219, 0.8), rgba(75, 85, 99, 0.6));
                 border-radius: 8px;
                 box-shadow:
-                    0 2px 4px color-mix(in srgb, canvastext 15%, transparent),
-                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
-                color: canvastext;
+                    0 2px 8px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)),
+                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.05));
+                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
+            `,
+
+            // Header sections for containers
+            containerHeader: `
+                background: light-dark(rgba(249, 250, 251, 0.8), rgba(55, 65, 81, 0.8));
+                border-bottom: 1px solid light-dark(rgba(229, 231, 235, 0.8), rgba(75, 85, 99, 0.6));
+                backdrop-filter: blur(8px);
+            `,
+
+            // Content sections for containers
+            containerContent: `
+                background: light-dark(rgba(255, 255, 255, 0.95), rgba(31, 41, 55, 0.95));
+                backdrop-filter: blur(8px);
+            `,
+
+            // Glass morphism container (lighter, for subtle overlays)
+            glassContainer: `
+                background: light-dark(rgba(255, 255, 255, 0.85), rgba(31, 41, 55, 0.85));
+                backdrop-filter: blur(8px);
+                border: 1.5px solid light-dark(rgba(209, 213, 219, 0.6), rgba(75, 85, 99, 0.4));
+                border-radius: 8px;
+                box-shadow:
+                    0 2px 4px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
+                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.05));
+                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
             `,
 
             // Alternative glass container for contrast
             contrastGlassContainer: `
-                background: color-mix(in srgb, canvas 90%, canvastext 5%);
+                background: light-dark(rgba(243, 244, 246, 0.9), rgba(55, 65, 81, 0.9));
                 backdrop-filter: blur(8px);
-                border: 1.5px solid color-mix(in srgb, canvastext 25%, transparent);
+                border: 1.5px solid light-dark(rgba(209, 213, 219, 0.8), rgba(75, 85, 99, 0.6));
                 border-radius: 8px;
                 box-shadow:
-                    0 2px 4px color-mix(in srgb, canvastext 20%, transparent),
-                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
-                color: canvastext;
+                    0 2px 4px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.25)),
+                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
+                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
             `,
 
             // Button base styles (theme-adaptive)
@@ -103,56 +127,56 @@
                 font-size: 12px;
                 backdrop-filter: blur(4px);
                 box-shadow:
-                    0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
-                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                    0 1px 3px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)),
+                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
             `,
 
             // Primary button (theme-adaptive)
             buttonPrimary: `
-                background: color-mix(in srgb, highlight 100%, transparent);
-                color: highlighttext;
-                border-color: color-mix(in srgb, highlight 80%, canvastext 20%);
+                background: light-dark(rgb(59, 130, 246), rgb(59, 130, 246));
+                color: white;
+                border-color: light-dark(rgba(37, 99, 235, 0.8), rgba(59, 130, 246, 0.8));
                 box-shadow:
-                    0 2px 4px color-mix(in srgb, highlight 30%, transparent),
-                    inset 0 1px 0 0 color-mix(in srgb, highlighttext 20%, transparent);
+                    0 2px 4px light-dark(rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.4)),
+                    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
             `,
 
             // Secondary button (theme-adaptive)
             buttonSecondary: `
-                background: color-mix(in srgb, canvas 95%, canvastext 5%);
-                color: canvastext;
-                border-color: color-mix(in srgb, canvastext 30%, transparent);
+                background: light-dark(rgba(243, 244, 246, 0.8), rgba(55, 65, 81, 0.8));
+                color: light-dark(rgb(17, 24, 39), rgb(209, 213, 219));
+                border-color: light-dark(rgba(209, 213, 219, 0.8), rgba(107, 114, 128, 0.8));
                 box-shadow:
-                    0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
-                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                    0 1px 3px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)),
+                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
             `,
 
             // Card base (theme-adaptive)
             cardBase: `
-                border: 1.5px solid color-mix(in srgb, canvastext 25%, transparent);
+                border: 1.5px solid light-dark(rgba(209, 213, 219, 0.8), rgba(75, 85, 99, 0.6));
                 border-radius: 8px;
-                background: color-mix(in srgb, canvas 90%, canvastext 5%);
+                background: light-dark(rgba(255, 255, 255, 0.9), rgba(31, 41, 55, 0.9));
                 backdrop-filter: blur(4px);
                 box-shadow:
-                    0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
-                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                    0 1px 3px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
+                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.05));
                 transition: all 0.2s ease;
-                color: canvastext;
+                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
             `,
 
             // Form input (theme-adaptive)
             formInput: `
                 width: 100%;
                 padding: 12px;
-                border: 1.5px solid color-mix(in srgb, canvastext 35%, transparent);
+                border: 1.5px solid light-dark(rgba(209, 213, 219, 0.8), rgba(107, 114, 128, 0.8));
                 border-radius: 8px;
                 font-size: 14px;
                 transition: all 0.2s ease;
-                background: color-mix(in srgb, canvas 95%, canvastext 3%);
-                color: canvastext;
+                background: light-dark(rgba(255, 255, 255, 0.9), rgba(55, 65, 81, 0.9));
+                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
                 box-shadow:
-                    inset 0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
-                    0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                    inset 0 1px 3px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
+                    0 1px 0 0 light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.05));
             `,
 
             // Badge base
@@ -175,7 +199,7 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: color-mix(in srgb, canvastext 50%, transparent);
+                background-color: light-dark(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -184,11 +208,11 @@
                 -webkit-backdrop-filter: blur(4px);
             `,
 
-            // Modal content (theme-adaptive)
+            // Modal content (theme-adaptive, matches Claude's design)
             modalContent: `
-                background: canvas;
-                color: canvastext;
-                border: 2px solid color-mix(in srgb, canvastext 30%, transparent);
+                background: light-dark(rgb(255, 255, 255), rgb(31, 41, 55));
+                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
+                border: 2px solid light-dark(rgba(229, 231, 235, 0.8), rgba(75, 85, 99, 0.6));
                 border-radius: 16px;
                 padding: 24px;
                 max-width: 768px;
@@ -196,9 +220,9 @@
                 max-height: 80vh;
                 overflow-y: auto;
                 box-shadow:
-                    0 20px 25px -5px color-mix(in srgb, canvastext 30%, transparent),
-                    0 10px 10px -5px color-mix(in srgb, canvastext 20%, transparent),
-                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                    0 20px 25px -5px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.4)),
+                    0 10px 10px -5px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)),
+                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.05));
                 animation: zoom 250ms ease-in forwards;
             `
         },
@@ -297,10 +321,18 @@
             .claude-rounded-xl { border-radius: 12px; }
 
             /* Shadow utilities */
-            .claude-shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-            .claude-shadow { box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-            .claude-shadow-md { box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
-            .claude-shadow-lg { box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
+            .claude-shadow-sm { 
+                box-shadow: 0 1px 2px light-dark(rgba(0,0,0,0.1), rgba(0,0,0,0.2)); 
+            }
+            .claude-shadow { 
+                box-shadow: 0 1px 3px light-dark(rgba(0,0,0,0.2), rgba(0,0,0,0.3)); 
+            }
+            .claude-shadow-md { 
+                box-shadow: 0 2px 6px light-dark(rgba(0,0,0,0.3), rgba(0,0,0,0.4)); 
+            }
+            .claude-shadow-lg { 
+                box-shadow: 0 4px 8px light-dark(rgba(0,0,0,0.4), rgba(0,0,0,0.5)); 
+            }
         `,
 
         // Language-specific badge colors
@@ -468,32 +500,6 @@
                     color: rgb(150, 235, 255);
                 }
             }
-        `,
-
-        // Dark mode support
-        darkMode: `
-            @media (prefers-color-scheme: dark) {
-                .claude-glass-container {
-                    background: rgba(31, 41, 55, 0.8);
-                    border-color: rgba(75, 85, 99, 0.4);
-                }
-
-                .claude-button-secondary {
-                    background: rgba(75, 85, 99, 0.8);
-                    border-color: #9ca3af;
-                    color: rgb(209, 213, 219);
-                }
-
-                .claude-form-input {
-                    background: #374151;
-                    border-color: #6b7280;
-                    color: #f9fafb;
-                }
-
-                .claude-form-input::placeholder {
-                    color: #9ca3af;
-                }
-            }
         `
     };
 
@@ -507,7 +513,6 @@
             ${this.animations}
             ${this.utilities}
             ${this.languageBadges}
-            ${this.darkMode}
             ${additionalCSS}
         `;
         document.head.appendChild(style);
@@ -540,8 +545,8 @@
                 button.style.transform = 'translateY(-1px)';
                 button.style.boxShadow = '0 3px 8px rgba(59, 130, 246, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.25)';
             } else {
-                button.style.background = 'rgba(75, 85, 99, 0.9)';
-                button.style.borderColor = '#9ca3af';
+                button.style.background = 'light-dark(rgba(229, 231, 235, 0.9), rgba(75, 85, 99, 0.9))';
+                button.style.borderColor = 'light-dark(rgba(156, 163, 175, 0.9), rgba(156, 163, 175, 0.9))';
                 button.style.transform = 'translateY(-1px)';
             }
         });
@@ -571,7 +576,7 @@
             font-family: "Styrene Display", -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 20px;
             font-weight: 500;
-            color: #f9fafb;
+            color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
             margin-bottom: 16px;
         `;
 

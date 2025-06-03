@@ -1,16 +1,26 @@
 // ==UserScript==
 // @name         Claude Project Instructions Library
 // @namespace    https://github.com/Aareon
-// @version      1.1
+// @version      1.2
 // @description  Manage and quickly apply different Project Instructions templates in Claude with enhanced selection visuals
 // @author       Aareon
 // @match        https://claude.ai/*
+// @require      https://cdn.jsdelivr.net/gh/Aareon/UserScripts@main/Claude/ClaudeStyleCommon.user.js
 // @grant        none
 // @license      Personal/Educational Only – No Commercial Use
 // ==/UserScript==
 
 (function () {
     'use strict';
+
+    // Wait for ClaudeStyles to be available
+    function waitForClaudeStyles(callback) {
+        if (window.ClaudeStyles) {
+            callback();
+        } else {
+            setTimeout(() => waitForClaudeStyles(callback), 100);
+        }
+    }
 
     // Storage key for saved instructions
     const STORAGE_KEY = 'claude_instructions_library';
@@ -32,20 +42,15 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
     };
 
-    // Enhanced CSS for the library interface with improved selection visuals
-    const libraryCSS = `
+    // Behavior-specific CSS (not shared with other scripts)
+    const specificCSS = `
         .instructions-library-container {
+            ${window.ClaudeStyles.components.glassContainer}
             margin-bottom: 12px;
-            border: 1.5px solid rgba(75, 85, 99, 0.4) !important;
-            border-radius: 8px;
-            background: transparent;
             overflow: hidden;
             transition: all 0.2s ease;
             position: relative;
             z-index: 1;
-            box-shadow:
-                0 2px 4px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
         }
 
         .instructions-library-header {
@@ -53,21 +58,22 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             align-items: center;
             justify-content: space-between;
             padding: 8px 12px;
-            background: var(--bg-100, rgba(249, 250, 251, 0.5));
-            border-bottom: 0.5px solid var(--border-300, rgba(209, 213, 219, 0.3));
+            background: color-mix(in srgb, canvas 90%, canvastext 5%);
+            border-bottom: 0.5px solid color-mix(in srgb, canvastext 30%, transparent);
             cursor: pointer;
             user-select: none;
             backdrop-filter: blur(8px);
+            transition: background 0.2s ease;
         }
 
         .instructions-library-header:hover {
-            background: var(--bg-200, rgba(243, 244, 246, 0.7));
+            background: color-mix(in srgb, canvas 85%, canvastext 10%);
         }
 
         .instructions-library-title {
             font-size: 12px;
             font-weight: 600;
-            color: var(--text-200, rgb(107, 114, 128));
+            color: color-mix(in srgb, canvastext 80%, transparent);
             display: flex;
             align-items: center;
             gap: 6px;
@@ -77,7 +83,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
-            background: var(--bg-000, rgba(255, 255, 255, 0.8));
+            background: color-mix(in srgb, canvas 95%, canvastext 3%);
             backdrop-filter: blur(8px);
         }
 
@@ -93,45 +99,37 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .instruction-template-card {
-            border: 1.5px solid rgba(75, 85, 99, 0.4) !important;
-            border-radius: 8px;
+            ${window.ClaudeStyles.components.cardBase}
             padding: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            background: rgba(31, 41, 55, 0.8) !important;
-            backdrop-filter: blur(4px);
             position: relative;
             overflow: hidden;
             display: flex;
             align-items: flex-start;
             gap: 8px;
-            color: rgb(209, 213, 219) !important;
-            box-shadow:
-                0 1px 3px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+            background: color-mix(in srgb, canvas 85%, canvastext 8%);
         }
 
         .instruction-template-card:hover {
-            background: rgba(55, 65, 81, 0.9) !important;
-            border-color: rgba(107, 114, 128, 0.6) !important;
-            box-shadow:
-                0 2px 8px rgba(0,0,0,0.3),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+            background: color-mix(in srgb, canvas 80%, canvastext 12%);
             transform: translateY(-1px);
+            box-shadow:
+                0 2px 8px color-mix(in srgb, canvastext 30%, transparent),
+                inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
         }
 
         .instruction-template-card:focus {
-            outline: 2px solid var(--accent-main-100, rgb(59, 130, 246));
+            outline: 2px solid color-mix(in srgb, highlight 100%, transparent);
             outline-offset: 2px;
         }
 
         .instruction-template-card.selected {
-            border-color: rgba(59, 130, 246, 0.6) !important;
-            background: rgba(59, 130, 246, 0.1) !important;
+            border-color: color-mix(in srgb, highlight 60%, transparent) !important;
+            background: color-mix(in srgb, highlight 10%, canvas 90%) !important;
             box-shadow:
-                0 2px 8px rgba(59, 130, 246, 0.3),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-                0 0 0 1px rgba(59, 130, 246, 0.3);
+                0 2px 8px color-mix(in srgb, highlight 30%, transparent),
+                inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent),
+                0 0 0 1px color-mix(in srgb, highlight 30%, transparent);
         }
 
         .template-checkbox {
@@ -155,19 +153,19 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .template-checkbox-button.unchecked {
-            border-color: var(--border-200, rgb(229, 231, 235));
+            border-color: color-mix(in srgb, canvastext 60%, transparent);
             background: transparent;
         }
 
         .template-checkbox-button.unchecked:hover {
-            background: var(--bg-000, rgba(255, 255, 255, 0.8));
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            background: color-mix(in srgb, canvas 90%, canvastext 5%);
+            box-shadow: 0 1px 2px color-mix(in srgb, canvastext 15%, transparent);
         }
 
         .template-checkbox-button.checked {
-            background: var(--accent-secondary-000, rgb(59, 130, 246));
-            border-color: var(--accent-secondary-200, rgba(59, 130, 246, 0.5));
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            background: color-mix(in srgb, highlight 100%, transparent);
+            border-color: color-mix(in srgb, highlight 80%, transparent);
+            box-shadow: 0 1px 2px color-mix(in srgb, canvastext 20%, transparent);
         }
 
         .template-checkbox-icon {
@@ -178,12 +176,12 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .template-checkbox-button.unchecked .template-checkbox-icon {
-            color: var(--text-always-white, white);
+            color: highlighttext;
             visibility: hidden;
         }
 
         .template-checkbox-button.checked .template-checkbox-icon {
-            color: var(--text-always-white, white);
+            color: highlighttext;
             visibility: visible;
         }
 
@@ -201,14 +199,14 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .instruction-template-card.selected .template-card-name {
-            color: white;
+            color: color-mix(in srgb, canvastext 100%, transparent);
             font-weight: 700;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            text-shadow: 0 1px 2px color-mix(in srgb, canvastext 20%, transparent);
         }
 
         .template-card-preview {
             font-size: 9px;
-            color: var(--text-400, rgb(156, 163, 175));
+            color: color-mix(in srgb, canvastext 70%, transparent);
             line-height: 1.3;
             overflow: hidden;
             display: -webkit-box;
@@ -217,8 +215,8 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .instruction-template-card.selected .template-card-preview {
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            color: color-mix(in srgb, canvastext 90%, transparent);
+            text-shadow: 0 1px 2px color-mix(in srgb, canvastext 20%, transparent);
         }
 
         .template-actions {
@@ -240,8 +238,8 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             height: 20px;
             border-radius: 4px;
             border: none;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
+            background: color-mix(in srgb, canvastext 60%, transparent);
+            color: canvas;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -251,15 +249,15 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .template-action-btn:hover {
-            background: rgba(0, 0, 0, 0.8);
+            background: color-mix(in srgb, canvastext 80%, transparent);
         }
 
         .template-action-btn.edit {
-            background: rgba(59, 130, 246, 0.8);
+            background: color-mix(in srgb, highlight 80%, transparent);
         }
 
         .template-action-btn.edit:hover {
-            background: rgba(59, 130, 246, 1);
+            background: color-mix(in srgb, highlight 100%, transparent);
         }
 
         .template-action-btn.delete {
@@ -274,54 +272,37 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             display: flex;
             gap: 8px;
             padding: 16px 12px;
-            border-top: 1px solid var(--border-300, rgba(209, 213, 219, 0.4));
-            background: var(--bg-100, rgba(249, 250, 251, 0.8));
+            border-top: 1px solid color-mix(in srgb, canvastext 30%, transparent);
+            background: color-mix(in srgb, canvas 90%, canvastext 5%);
             backdrop-filter: blur(8px);
             margin-top: auto;
             flex-shrink: 0;
         }
 
         .library-btn {
-            font-size: 12px;
-            padding: 8px 16px;
-            border: 1.5px solid #6b7280 !important;
-            border-radius: 6px;
-            background: rgba(55, 65, 81, 0.8) !important;
-            color: rgb(156, 163, 175) !important;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(4px);
-            font-weight: 500;
-            box-shadow:
-                0 1px 3px rgba(0,0,0,0.2),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+            ${window.ClaudeStyles.components.buttonBase}
+            ${window.ClaudeStyles.components.buttonSecondary}
         }
 
         .library-btn:hover {
-            background: rgba(75, 85, 99, 0.9) !important;
-            border-color: #9ca3af !important;
-            box-shadow:
-                0 2px 6px rgba(0,0,0,0.3),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+            background: color-mix(in srgb, canvas 75%, canvastext 15%);
+            border-color: color-mix(in srgb, canvastext 50%, transparent);
             transform: translateY(-1px);
+            box-shadow:
+                0 2px 6px color-mix(in srgb, canvastext 30%, transparent),
+                inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
         }
 
         .library-btn.primary {
-            background: var(--accent-main-100, rgb(59, 130, 246)) !important;
-            color: white !important;
-            border: 2px solid rgba(37, 99, 235, 0.8) !important;
-            box-shadow:
-                0 2px 4px rgba(59, 130, 246, 0.3),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+            ${window.ClaudeStyles.components.buttonPrimary}
         }
 
         .library-btn.primary:hover {
-            background: var(--accent-main-200, rgb(37, 99, 235)) !important;
-            border-color: rgb(29, 78, 216) !important;
-            box-shadow:
-                0 3px 8px rgba(59, 130, 246, 0.4),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+            background: color-mix(in srgb, highlight 85%, canvastext 5%);
             transform: translateY(-2px);
+            box-shadow:
+                0 3px 8px color-mix(in srgb, highlight 40%, transparent),
+                inset 0 1px 0 0 color-mix(in srgb, highlighttext 25%, transparent);
         }
 
         .library-btn:disabled {
@@ -340,52 +321,17 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            ${window.ClaudeStyles.components.modalOverlay}
         }
 
         .modal-content {
-            background: #1f1e1d !important;
-            color: rgb(250, 249, 245) !important;
-            border: 2px solid rgba(222, 220, 209, 0.3) !important;
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 768px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow:
-                0 20px 25px -5px rgba(0, 0, 0, 0.3),
-                0 10px 10px -5px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-            animation: zoom 250ms ease-in forwards;
+            ${window.ClaudeStyles.components.modalContent}
             display: flex;
             flex-direction: column;
             min-height: 0;
             position: relative;
             pointer-events: auto;
             box-sizing: border-box;
-        }
-
-        @keyframes zoom {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
         }
 
         .modal-header {
@@ -399,13 +345,13 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             font-family: "Styrene Display", -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 20px;
             font-weight: 500;
-            color: #f9fafb !important;
+            color: canvastext;
             line-height: 1.2;
         }
 
         .modal-subtitle {
             font-size: 14px;
-            color: #d1d5db !important;
+            color: color-mix(in srgb, canvastext 80%, transparent);
             line-height: 1.4;
         }
 
@@ -418,44 +364,33 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             font-size: 14px;
             font-weight: 500;
             margin-bottom: 8px;
-            color: #f3f4f6 !important;
+            color: canvastext;
         }
 
         .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 1.5px solid #6b7280 !important;
-            border-radius: 10px;
-            font-size: 14px;
-            line-height: 1.25;
-            transition: all 0.2s ease;
-            background: #30302e !important;
-            color: #f9fafb !important;
+            ${window.ClaudeStyles.components.formInput}
             box-sizing: border-box;
-            box-shadow:
-                inset 0 1px 3px rgba(0, 0, 0, 0.2),
-                0 1px 0 0 rgba(255, 255, 255, 0.05);
         }
 
         .form-input:hover {
-            border-color: #9ca3af !important;
+            border-color: color-mix(in srgb, canvastext 50%, transparent);
             box-shadow:
-                inset 0 1px 3px rgba(0, 0, 0, 0.2),
-                0 1px 0 0 rgba(255, 255, 255, 0.1),
-                0 0 0 1px rgba(156, 163, 175, 0.3);
+                inset 0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
+                0 1px 0 0 color-mix(in srgb, canvas 100%, transparent),
+                0 0 0 1px color-mix(in srgb, canvastext 30%, transparent);
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #60a5fa !important;
+            border-color: color-mix(in srgb, highlight 100%, transparent);
             box-shadow:
-                inset 0 1px 3px rgba(0, 0, 0, 0.2),
-                0 1px 0 0 rgba(255, 255, 255, 0.1),
-                0 0 0 2px rgba(96, 165, 250, 0.3) !important;
+                inset 0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
+                0 1px 0 0 color-mix(in srgb, canvas 100%, transparent),
+                0 0 0 2px color-mix(in srgb, highlight 30%, transparent);
         }
 
         .form-input::placeholder {
-            color: #9ca3af !important;
+            color: color-mix(in srgb, canvastext 60%, transparent);
         }
 
         .form-textarea {
@@ -475,46 +410,29 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .modal-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            flex-shrink: 0;
-            cursor: pointer;
-            user-select: none;
-            font-family: "Styrene", -apple-system, BlinkMacSystemFont, sans-serif;
-            font-weight: 500;
-            font-size: 14px;
+            ${window.ClaudeStyles.components.buttonBase}
+            ${window.ClaudeStyles.components.buttonSecondary}
             height: 36px;
-            padding: 8px 16px;
-            border-radius: 8px;
             min-width: 80px;
             white-space: nowrap;
-            transition: all 0.15s ease;
-            border: 1.5px solid #6b7280 !important;
-            background: rgba(20, 20, 19, 0.3) !important;
-            color: rgb(250, 249, 245) !important;
             overflow: hidden;
             backface-visibility: hidden;
-            box-shadow:
-                0 1px 3px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
         }
 
         .modal-btn:hover {
-            border-color: #9ca3af !important;
-            background: rgba(75, 85, 99, 0.4) !important;
+            background: color-mix(in srgb, canvas 70%, canvastext 20%);
+            border-color: color-mix(in srgb, canvastext 50%, transparent);
             transform: translateY(-1px);
             box-shadow:
-                0 2px 6px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+                0 2px 6px color-mix(in srgb, canvastext 40%, transparent),
+                inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
         }
 
         .modal-btn:active {
             transform: translateY(0);
             box-shadow:
-                0 1px 2px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+                0 1px 2px color-mix(in srgb, canvastext 40%, transparent),
+                inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
         }
 
         .modal-btn:disabled {
@@ -524,39 +442,33 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .modal-btn.primary {
-            background: #f9fafb !important;
-            color: #1f1e1d !important;
-            border: 2px solid #e5e7eb !important;
+            ${window.ClaudeStyles.components.buttonPrimary}
             position: relative;
             overflow: hidden;
             will-change: transform;
             transition: all 150ms cubic-bezier(0.165, 0.85, 0.45, 1);
-            box-shadow:
-                0 2px 4px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
         }
 
         .modal-btn.primary:hover {
             transform: translateY(-2px) scale(1.02);
-            background: #e5e7eb !important;
-            border-color: #d1d5db !important;
+            background: color-mix(in srgb, highlight 85%, canvastext 5%);
             box-shadow:
-                0 4px 8px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+                0 4px 8px color-mix(in srgb, highlight 50%, transparent),
+                inset 0 1px 0 0 color-mix(in srgb, highlighttext 90%, transparent);
         }
 
         .modal-btn.primary:active {
             transform: translateY(-1px) scale(1.01);
             box-shadow:
-                0 2px 4px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+                0 2px 4px color-mix(in srgb, highlight 40%, transparent),
+                inset 0 1px 0 0 color-mix(in srgb, highlighttext 90%, transparent);
         }
 
         .modal-btn.primary::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(at bottom, hsla(0, 0%, 100%, 20%), hsla(0, 0%, 100%, 0%));
+            background: radial-gradient(at bottom, color-mix(in srgb, highlighttext 20%, transparent), color-mix(in srgb, highlighttext 0%, transparent));
             opacity: 0;
             transition: all 200ms ease;
             transform: translateY(8px);
@@ -565,31 +477,6 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         .modal-btn.primary:hover::after {
             opacity: 1;
             transform: translateY(0);
-        }
-
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            .instructions-library-header {
-                background: var(--bg-100, rgba(31, 41, 55, 0.5));
-                border-color: var(--border-300, rgba(75, 85, 99, 0.3));
-            }
-
-            .instructions-library-header:hover {
-                background: var(--bg-200, rgba(55, 65, 81, 0.7));
-            }
-
-            .instructions-library-title {
-                color: var(--text-200, rgb(156, 163, 175));
-            }
-
-            .instructions-library-content {
-                background: var(--bg-000, rgba(17, 24, 39, 0.8));
-            }
-
-            .library-actions {
-                background: var(--bg-100, rgba(31, 41, 55, 0.8));
-                border-color: var(--border-300, rgba(75, 85, 99, 0.4));
-            }
         }
     `;
 
@@ -618,12 +505,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
 
     // Add CSS to page
     function addCSS() {
-        if (document.getElementById('instructions-library-css')) return;
-
-        const style = document.createElement('style');
-        style.id = 'instructions-library-css';
-        style.textContent = libraryCSS;
-        document.head.appendChild(style);
+        window.ClaudeStyles.addCommonCSS('instructions-library-css', specificCSS);
     }
 
     // Extract current project details from URL and cookies
@@ -767,19 +649,15 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         instructionsGroup.appendChild(instructionsLabel);
         instructionsGroup.appendChild(instructionsTextarea);
 
-        // Create actions
+        // Create actions using ClaudeStyles
         const actions = document.createElement('div');
         actions.className = 'modal-actions';
 
-        const cancelBtn = document.createElement('button');
-        cancelBtn.className = 'modal-btn';
-        cancelBtn.textContent = 'Cancel';
-        cancelBtn.id = 'cancel-btn';
+        const cancelBtn = window.ClaudeStyles.createButton('Cancel', 'secondary');
+        cancelBtn.className += ' modal-btn';
 
-        const saveBtn = document.createElement('button');
-        saveBtn.className = 'modal-btn primary';
-        saveBtn.textContent = isEdit ? 'Save changes' : 'Save template';
-        saveBtn.id = 'save-btn';
+        const saveBtn = window.ClaudeStyles.createButton(isEdit ? 'Save changes' : 'Save template', 'primary');
+        saveBtn.className += ' modal-btn primary';
 
         actions.appendChild(cancelBtn);
         actions.appendChild(saveBtn);
@@ -1093,21 +971,23 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
     }
 
-    // Start when page is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
+    // Start when ClaudeStyles is ready
+    waitForClaudeStyles(() => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(init, 1000);
+            });
+        } else {
             setTimeout(init, 1000);
-        });
-    } else {
-        setTimeout(init, 1000);
-    }
-
-    // Periodic check for new project pages
-    setInterval(() => {
-        if (document.visibilityState === 'visible' &&
-            window.location.href.includes('/project/')) {
-            insertLibraryInterface();
         }
-    }, 3000);
+
+        // Periodic check for new project pages
+        setInterval(() => {
+            if (document.visibilityState === 'visible' &&
+                window.location.href.includes('/project/')) {
+                insertLibraryInterface();
+            }
+        }, 3000);
+    });
 
 })();
