@@ -43,7 +43,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             transition: all 0.2s ease;
             position: relative;
             z-index: 1;
-            box-shadow: 
+            box-shadow:
                 0 2px 4px rgba(0, 0, 0, 0.1),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
         }
@@ -106,7 +106,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             align-items: flex-start;
             gap: 8px;
             color: rgb(209, 213, 219) !important;
-            box-shadow: 
+            box-shadow:
                 0 1px 3px rgba(0, 0, 0, 0.2),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
         }
@@ -114,7 +114,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         .instruction-template-card:hover {
             background: rgba(55, 65, 81, 0.9) !important;
             border-color: rgba(107, 114, 128, 0.6) !important;
-            box-shadow: 
+            box-shadow:
                 0 2px 8px rgba(0,0,0,0.3),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
             transform: translateY(-1px);
@@ -128,7 +128,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         .instruction-template-card.selected {
             border-color: rgba(59, 130, 246, 0.6) !important;
             background: rgba(59, 130, 246, 0.1) !important;
-            box-shadow: 
+            box-shadow:
                 0 2px 8px rgba(59, 130, 246, 0.3),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
                 0 0 0 1px rgba(59, 130, 246, 0.3);
@@ -292,7 +292,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             transition: all 0.2s ease;
             backdrop-filter: blur(4px);
             font-weight: 500;
-            box-shadow: 
+            box-shadow:
                 0 1px 3px rgba(0,0,0,0.2),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
         }
@@ -300,7 +300,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         .library-btn:hover {
             background: rgba(75, 85, 99, 0.9) !important;
             border-color: #9ca3af !important;
-            box-shadow: 
+            box-shadow:
                 0 2px 6px rgba(0,0,0,0.3),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
             transform: translateY(-1px);
@@ -310,7 +310,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             background: var(--accent-main-100, rgb(59, 130, 246)) !important;
             color: white !important;
             border: 2px solid rgba(37, 99, 235, 0.8) !important;
-            box-shadow: 
+            box-shadow:
                 0 2px 4px rgba(59, 130, 246, 0.3),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
         }
@@ -318,7 +318,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         .library-btn.primary:hover {
             background: var(--accent-main-200, rgb(37, 99, 235)) !important;
             border-color: rgb(29, 78, 216) !important;
-            box-shadow: 
+            box-shadow:
                 0 3px 8px rgba(59, 130, 246, 0.4),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
             transform: translateY(-2px);
@@ -432,14 +432,14 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             background: #30302e !important;
             color: #f9fafb !important;
             box-sizing: border-box;
-            box-shadow: 
+            box-shadow:
                 inset 0 1px 3px rgba(0, 0, 0, 0.2),
                 0 1px 0 0 rgba(255, 255, 255, 0.05);
         }
 
         .form-input:hover {
             border-color: #9ca3af !important;
-            box-shadow: 
+            box-shadow:
                 inset 0 1px 3px rgba(0, 0, 0, 0.2),
                 0 1px 0 0 rgba(255, 255, 255, 0.1),
                 0 0 0 1px rgba(156, 163, 175, 0.3);
@@ -448,7 +448,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         .form-input:focus {
             outline: none;
             border-color: #60a5fa !important;
-            box-shadow: 
+            box-shadow:
                 inset 0 1px 3px rgba(0, 0, 0, 0.2),
                 0 1px 0 0 rgba(255, 255, 255, 0.1),
                 0 0 0 2px rgba(96, 165, 250, 0.3) !important;
@@ -496,7 +496,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             color: rgb(250, 249, 245) !important;
             overflow: hidden;
             backface-visibility: hidden;
-            box-shadow: 
+            box-shadow:
                 0 1px 3px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
         }
@@ -505,14 +505,14 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             border-color: #9ca3af !important;
             background: rgba(75, 85, 99, 0.4) !important;
             transform: translateY(-1px);
-            box-shadow: 
+            box-shadow:
                 0 2px 6px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
         }
 
         .modal-btn:active {
             transform: translateY(0);
-            box-shadow: 
+            box-shadow:
                 0 1px 2px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
         }
@@ -531,7 +531,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             overflow: hidden;
             will-change: transform;
             transition: all 150ms cubic-bezier(0.165, 0.85, 0.45, 1);
-            box-shadow: 
+            box-shadow:
                 0 2px 4px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
         }
@@ -540,14 +540,14 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             transform: translateY(-2px) scale(1.02);
             background: #e5e7eb !important;
             border-color: #d1d5db !important;
-            box-shadow: 
+            box-shadow:
                 0 4px 8px rgba(0, 0, 0, 0.5),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
         }
 
         .modal-btn.primary:active {
             transform: translateY(-1px) scale(1.01);
-            box-shadow: 
+            box-shadow:
                 0 2px 4px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
         }
