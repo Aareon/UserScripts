@@ -210,9 +210,9 @@
 
             // Modal content (theme-adaptive, matches Claude's design)
             modalContent: `
-                background: rgb(255, 255, 255);
-                color: rgb(17, 24, 39);
-                border: 2px solid rgba(229, 231, 235, 0.8);
+                background: rgb(31, 30, 29);
+                color: rgb(224, 225, 226);
+                border: 2px solid rgba(52, 58, 67, 0.8);
                 border-radius: 16px;
                 padding: 24px;
                 max-width: 768px;
@@ -220,9 +220,8 @@
                 max-height: 80vh;
                 overflow-y: auto;
                 box-shadow:
-                    0 20px 25px -5px rgba(0, 0, 0, 0.15),
-                    0 10px 10px -5px rgba(0, 0, 0, 0.1),
-                    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+                    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+                    0 10px 10px -5px rgba(0, 0, 0, 0.2);
                 animation: zoom 250ms ease-in forwards;
             `
         },
