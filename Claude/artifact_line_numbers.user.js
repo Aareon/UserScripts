@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Claude Artifact Line Numbers
 // @namespace    https://github.com/Aareon
-// @version      1.1
+// @version      1.2
 // @description  Add line numbers to Claude artifacts that hide during generation and return when complete
 // @author       Aareon
 // @match        https://claude.ai/*
+// @require      https://cdn.jsdelivr.net/gh/Aareon/UserScripts@main/Claude/ClaudeStyleCommon.user.js
 // @grant        none
 // @license      Personal/Educational Only – No Commercial Use
 // ==/UserScript==
