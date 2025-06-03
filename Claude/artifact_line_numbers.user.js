@@ -1,26 +1,16 @@
 // ==UserScript==
 // @name         Claude Artifact Line Numbers
 // @namespace    https://github.com/Aareon
-// @version      1.2
+// @version      1.1
 // @description  Add line numbers to Claude artifacts that hide during generation and return when complete
 // @author       Aareon
 // @match        https://claude.ai/*
-// @require      https://github.com/Aareon/UserScripts/raw/refs/heads/main/Claude/ClaudeStyleCommon.user.js
 // @grant        none
 // @license      Personal/Educational Only – No Commercial Use
 // ==/UserScript==
 
 (function () {
     'use strict';
-
-    // Wait for ClaudeStyles to be available
-    function waitForClaudeStyles(callback) {
-        if (window.ClaudeStyles) {
-            callback();
-        } else {
-            setTimeout(() => waitForClaudeStyles(callback), 100);
-        }
-    }
 
     // Simple debounce function
     function debounce(func, delay) {
@@ -31,7 +21,7 @@
         };
     }
 
-    // CSS for line numbers (using common styles)
+    // CSS for line numbers
     const lineNumberCSS = `
         .claude-line-numbers-wrapper {
             position: relative;
@@ -91,6 +81,16 @@
     let generationObserver = null;
     let processedCodeBlocks = new Set();
 
+    // Add CSS to page
+    function addCSS() {
+        if (document.getElementById('claude-line-numbers-css')) return;
+
+        const style = document.createElement('style');
+        style.id = 'claude-line-numbers-css';
+        style.textContent = lineNumberCSS;
+        document.head.appendChild(style);
+    }
+
     // Generate line numbers text
     function generateLineNumbers(text) {
         const lines = text.split('\n');
@@ -105,10 +105,11 @@
 
     // Detect if Claude is currently generating
     function detectGeneration() {
+        // Look for generation indicators
         const generationIndicators = [
-            '.text-token-text-secondary',
-            '[data-testid="stop-button"]',
-            '.animate-pulse',
+            '.text-token-text-secondary', // Thinking indicator
+            '[data-testid="stop-button"]', // Stop button visible
+            '.animate-pulse', // Pulsing elements during generation
             '.loading-indicator',
             '[aria-label="Stop generating"]'
         ];
@@ -119,13 +120,16 @@
             }
         }
 
+        // Check for streaming text patterns (rapid DOM changes)
         const artifactContainers = document.querySelectorAll('[class*="artifact"], [data-artifact]');
         for (const container of artifactContainers) {
+            // Look for span elements being added rapidly (typical of streaming)
             const spans = container.querySelectorAll('span');
             if (spans.length > 0) {
+                // Check if spans are being added with partial content
                 for (const span of spans) {
                     if (span.textContent === '' || span.textContent.length < 3) {
-                        return true;
+                        return true; // Likely mid-generation
                     }
                 }
             }
@@ -140,6 +144,7 @@
         wrappers.forEach(wrapper => {
             const codeContainer = wrapper.querySelector('.code-block__code');
             if (codeContainer && wrapper.parentNode) {
+                // Move code container back to original location
                 try {
                     wrapper.parentNode.insertBefore(codeContainer, wrapper);
                     wrapper.parentNode.removeChild(wrapper);
@@ -205,7 +210,7 @@
 
     // Process all code blocks on page
     function processAllCodeBlocks() {
-        if (isGenerating) return;
+        if (isGenerating) return; // Don't process during generation
 
         const codeSelectors = [
             'code.language-python',
@@ -246,10 +251,12 @@
         isGenerating = detectGeneration();
 
         if (wasGenerating && !isGenerating) {
+            // Generation just stopped - add line numbers back
             setTimeout(() => {
                 processAllCodeBlocks();
-            }, 1000);
+            }, 1000); // Wait for DOM to stabilize
         } else if (!wasGenerating && isGenerating) {
+            // Generation just started - remove line numbers
             removeAllLineNumbers();
         }
     }
@@ -259,13 +266,16 @@
 
     // Set up generation monitoring
     function setupGenerationMonitoring() {
+        // Monitor for generation state changes
         generationObserver = new MutationObserver((mutations) => {
             let shouldCheck = false;
 
             for (const mutation of mutations) {
+                // Check for generation-related changes
                 if (mutation.type === 'childList') {
                     for (const node of mutation.addedNodes) {
                         if (node.nodeType === Node.ELEMENT_NODE) {
+                            // Look for generation indicators or new spans
                             if (node.matches && (
                                 node.matches('span, button, [data-testid*="stop"], [class*="pulse"]') ||
                                 node.querySelector('span, button, [data-testid*="stop"], [class*="pulse"]')
@@ -293,8 +303,7 @@
 
     // Initial setup
     function init() {
-        // Use ClaudeStyles to add CSS
-        window.ClaudeStyles.addCommonCSS('claude-line-numbers-css', lineNumberCSS);
+        addCSS();
 
         // Initial generation check
         handleGenerationChange();
@@ -315,25 +324,23 @@
         }
     }
 
-    // Start when ClaudeStyles is ready
-    waitForClaudeStyles(() => {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(init, 1000);
-            });
-        } else {
+    // Start when page is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
             setTimeout(init, 1000);
+        });
+    } else {
+        setTimeout(init, 1000);
+    }
+
+    // Cleanup on unload
+    window.addEventListener('beforeunload', cleanup);
+
+    // Periodic check for missed artifacts (only when not generating)
+    setInterval(() => {
+        if (!isGenerating && document.visibilityState === 'visible') {
+            handleGenerationChange();
         }
-
-        // Cleanup on unload
-        window.addEventListener('beforeunload', cleanup);
-
-        // Periodic check for missed artifacts
-        setInterval(() => {
-            if (!isGenerating && document.visibilityState === 'visible') {
-                handleGenerationChange();
-            }
-        }, 3000);
-    });
+    }, 3000);
 
 })();
