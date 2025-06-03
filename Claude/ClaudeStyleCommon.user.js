@@ -346,6 +346,128 @@
                 color: rgb(97, 218, 251);
                 border-color: rgba(97, 218, 251, 0.2);
             }
+
+            .claude-badge-java {
+                background: rgba(237, 117, 42, 0.1);
+                color: rgb(237, 117, 42);
+                border-color: rgba(237, 117, 42, 0.2);
+            }
+
+            .claude-badge-cpp, .claude-badge-c {
+                background: rgba(0, 89, 156, 0.1);
+                color: rgb(0, 89, 156);
+                border-color: rgba(0, 89, 156, 0.2);
+            }
+
+            .claude-badge-csharp {
+                background: rgba(93, 46, 160, 0.1);
+                color: rgb(93, 46, 160);
+                border-color: rgba(93, 46, 160, 0.2);
+            }
+
+            .claude-badge-php {
+                background: rgba(119, 123, 180, 0.1);
+                color: rgb(119, 123, 180);
+                border-color: rgba(119, 123, 180, 0.2);
+            }
+
+            .claude-badge-ruby {
+                background: rgba(204, 52, 45, 0.1);
+                color: rgb(204, 52, 45);
+                border-color: rgba(204, 52, 45, 0.2);
+            }
+
+            .claude-badge-go {
+                background: rgba(0, 173, 216, 0.1);
+                color: rgb(0, 173, 216);
+                border-color: rgba(0, 173, 216, 0.2);
+            }
+
+            .claude-badge-rust {
+                background: rgba(222, 165, 132, 0.1);
+                color: rgb(222, 165, 132);
+                border-color: rgba(222, 165, 132, 0.2);
+            }
+
+            .claude-badge-swift {
+                background: rgba(250, 95, 55, 0.1);
+                color: rgb(250, 95, 55);
+                border-color: rgba(250, 95, 55, 0.2);
+            }
+
+            .claude-badge-json {
+                background: rgba(41, 128, 185, 0.1);
+                color: rgb(41, 128, 185);
+                border-color: rgba(41, 128, 185, 0.2);
+            }
+
+            .claude-badge-xml {
+                background: rgba(155, 89, 182, 0.1);
+                color: rgb(155, 89, 182);
+                border-color: rgba(155, 89, 182, 0.2);
+            }
+
+            .claude-badge-yaml, .claude-badge-yml {
+                background: rgba(230, 126, 34, 0.1);
+                color: rgb(230, 126, 34);
+                border-color: rgba(230, 126, 34, 0.2);
+            }
+
+            .claude-badge-sql {
+                background: rgba(52, 152, 219, 0.1);
+                color: rgb(52, 152, 219);
+                border-color: rgba(52, 152, 219, 0.2);
+            }
+
+            .claude-badge-bash, .claude-badge-shell {
+                background: rgba(46, 204, 113, 0.1);
+                color: rgb(46, 204, 113);
+                border-color: rgba(46, 204, 113, 0.2);
+            }
+
+            .claude-badge-markdown, .claude-badge-md {
+                background: rgba(52, 73, 94, 0.1);
+                color: rgb(52, 73, 94);
+                border-color: rgba(52, 73, 94, 0.2);
+            }
+
+            /* Dark mode adjustments for language badges */
+            @media (prefers-color-scheme: dark) {
+                .claude-badge-html {
+                    background: rgba(228, 77, 38, 0.15);
+                    color: rgb(255, 120, 90);
+                }
+
+                .claude-badge-css {
+                    background: rgba(21, 114, 182, 0.15);
+                    color: rgb(100, 170, 255);
+                }
+
+                .claude-badge-js, .claude-badge-javascript {
+                    background: rgba(247, 223, 30, 0.15);
+                    color: rgb(255, 235, 80);
+                }
+
+                .claude-badge-python {
+                    background: rgba(53, 114, 165, 0.15);
+                    color: rgb(120, 180, 255);
+                }
+
+                .claude-badge-typescript, .claude-badge-ts {
+                    background: rgba(49, 120, 198, 0.15);
+                    color: rgb(110, 170, 255);
+                }
+
+                .claude-badge-userscript {
+                    background: rgba(255, 140, 0, 0.15);
+                    color: rgb(255, 180, 80);
+                }
+
+                .claude-badge-react {
+                    background: rgba(97, 218, 251, 0.15);
+                    color: rgb(150, 235, 255);
+                }
+            }
         `,
 
         // Dark mode support

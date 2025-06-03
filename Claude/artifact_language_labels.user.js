@@ -5,7 +5,7 @@
 // @description  Add programming language labels to Claude artifact titles with improved TypeScript detection and UserScript support
 // @author       Aareon
 // @match        https://claude.ai/*
-// @require      https://github.com/Aareon/UserScripts/raw/refs/heads/main/Claude/ClaudeStyleCommon.user.js
+// @require      https://cdn.jsdelivr.net/gh/Aareon/UserScripts@main/Claude/ClaudeStyleCommon.user.js
 // @grant        none
 // @license      Personal/Educational Only – No Commercial Use
 // ==/UserScript==
@@ -73,33 +73,29 @@
         'angular': 'Angular'
     };
 
-    // Additional CSS for language badges (extends common styles)
+    // Additional CSS specific to language badges
     const additionalCSS = `
         .artifact-language-badge {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(59, 130, 246, 0.1);
-            color: rgb(59, 130, 246);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 6px;
-            padding: 4px 8px;
-            font-size: 11px;
-            font-weight: 600;
+            ${window.ClaudeStyles.components.badgeBase}
             margin-left: 8px;
             margin-right: 8px;
             flex-shrink: 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             height: fit-content;
         }
 
-        /* Dark mode adjustments */
-        @media (prefers-color-scheme: dark) {
-            .artifact-language-badge {
-                background: rgba(59, 130, 246, 0.15);
-                color: rgb(96, 165, 250);
-                border-color: rgba(59, 130, 246, 0.3);
-            }
+        /* Specific badge colors using the common system */
+        .artifact-language-badge.claude-badge-userscript {
+            ${window.ClaudeStyles.components.badgeBase}
+            background: rgba(255, 140, 0, 0.1);
+            color: rgb(255, 140, 0);
+            border-color: rgba(255, 140, 0, 0.2);
+        }
+
+        .artifact-language-badge.claude-badge-react {
+            ${window.ClaudeStyles.components.badgeBase}
+            background: rgba(97, 218, 251, 0.1);
+            color: rgb(97, 218, 251);
+            border-color: rgba(97, 218, 251, 0.2);
         }
     `;
 
@@ -328,6 +324,13 @@
         // Use ClaudeStyles to create the badge
         const badge = window.ClaudeStyles.createLanguageBadge(language, displayName);
         badge.className += ' artifact-language-badge';
+
+        // Add specific badge class for enhanced styling
+        if (language.toLowerCase() === 'userscript') {
+            badge.className += ' claude-badge-userscript';
+        } else if (language.toLowerCase() === 'react') {
+            badge.className += ' claude-badge-react';
+        }
 
         // Find the left section to add the badge
         const leftSection = headerArea.querySelector('div.flex.items-center.flex-1');
