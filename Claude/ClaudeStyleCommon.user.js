@@ -63,30 +63,31 @@
 
         // Common CSS components
         components: {
-            // Glass morphism container
+            // Glass morphism container (adapts to theme)
             glassContainer: `
-                background: rgba(255, 255, 255, 0.8);
+                background: color-mix(in srgb, canvas 85%, transparent);
                 backdrop-filter: blur(8px);
-                border: 1.5px solid rgba(75, 85, 99, 0.4);
+                border: 1.5px solid color-mix(in srgb, canvastext 20%, transparent);
                 border-radius: 8px;
                 box-shadow:
-                    0 2px 4px rgba(0, 0, 0, 0.1),
-                    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+                    0 2px 4px color-mix(in srgb, canvastext 15%, transparent),
+                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                color: canvastext;
             `,
 
-            // Dark glass container
-            darkGlassContainer: `
-                background: rgba(31, 41, 55, 0.8);
+            // Alternative glass container for contrast
+            contrastGlassContainer: `
+                background: color-mix(in srgb, canvas 90%, canvastext 5%);
                 backdrop-filter: blur(8px);
-                border: 1.5px solid rgba(75, 85, 99, 0.4);
+                border: 1.5px solid color-mix(in srgb, canvastext 25%, transparent);
                 border-radius: 8px;
                 box-shadow:
-                    0 2px 4px rgba(0, 0, 0, 0.2),
-                    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
-                color: rgb(209, 213, 219);
+                    0 2px 4px color-mix(in srgb, canvastext 20%, transparent),
+                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                color: canvastext;
             `,
 
-            // Button base styles
+            // Button base styles (theme-adaptive)
             buttonBase: `
                 display: inline-flex;
                 align-items: center;
@@ -102,56 +103,56 @@
                 font-size: 12px;
                 backdrop-filter: blur(4px);
                 box-shadow:
-                    0 1px 3px rgba(0,0,0,0.2),
-                    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+                    0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
+                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
             `,
 
-            // Primary button
+            // Primary button (theme-adaptive)
             buttonPrimary: `
-                background: rgb(59, 130, 246);
-                color: white;
-                border-color: rgba(37, 99, 235, 0.8);
+                background: color-mix(in srgb, highlight 100%, transparent);
+                color: highlighttext;
+                border-color: color-mix(in srgb, highlight 80%, canvastext 20%);
                 box-shadow:
-                    0 2px 4px rgba(59, 130, 246, 0.3),
-                    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+                    0 2px 4px color-mix(in srgb, highlight 30%, transparent),
+                    inset 0 1px 0 0 color-mix(in srgb, highlighttext 20%, transparent);
             `,
 
-            // Secondary button
+            // Secondary button (theme-adaptive)
             buttonSecondary: `
-                background: rgba(55, 65, 81, 0.8);
-                color: rgb(156, 163, 175);
-                border-color: #6b7280;
+                background: color-mix(in srgb, canvas 95%, canvastext 5%);
+                color: canvastext;
+                border-color: color-mix(in srgb, canvastext 30%, transparent);
                 box-shadow:
-                    0 1px 3px rgba(0,0,0,0.2),
-                    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+                    0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
+                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
             `,
 
-            // Card base
+            // Card base (theme-adaptive)
             cardBase: `
-                border: 1.5px solid rgba(75, 85, 99, 0.4);
+                border: 1.5px solid color-mix(in srgb, canvastext 25%, transparent);
                 border-radius: 8px;
-                background: rgba(31, 41, 55, 0.8);
+                background: color-mix(in srgb, canvas 90%, canvastext 5%);
                 backdrop-filter: blur(4px);
                 box-shadow:
-                    0 1px 3px rgba(0, 0, 0, 0.2),
-                    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+                    0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
+                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
                 transition: all 0.2s ease;
-                color: rgb(209, 213, 219);
+                color: canvastext;
             `,
 
-            // Form input
+            // Form input (theme-adaptive)
             formInput: `
                 width: 100%;
                 padding: 12px;
-                border: 1.5px solid #6b7280;
+                border: 1.5px solid color-mix(in srgb, canvastext 35%, transparent);
                 border-radius: 8px;
                 font-size: 14px;
                 transition: all 0.2s ease;
-                background: #30302e;
-                color: #f9fafb;
+                background: color-mix(in srgb, canvas 95%, canvastext 3%);
+                color: canvastext;
                 box-shadow:
-                    inset 0 1px 3px rgba(0, 0, 0, 0.2),
-                    0 1px 0 0 rgba(255, 255, 255, 0.05);
+                    inset 0 1px 3px color-mix(in srgb, canvastext 20%, transparent),
+                    0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
             `,
 
             // Badge base
@@ -167,14 +168,14 @@
                 border: 1px solid;
             `,
 
-            // Modal overlay
+            // Modal overlay (theme-adaptive)
             modalOverlay: `
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: rgba(0, 0, 0, 0.5);
+                background-color: color-mix(in srgb, canvastext 50%, transparent);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -183,11 +184,11 @@
                 -webkit-backdrop-filter: blur(4px);
             `,
 
-            // Modal content
+            // Modal content (theme-adaptive)
             modalContent: `
-                background: #1f1e1d;
-                color: rgb(250, 249, 245);
-                border: 2px solid rgba(222, 220, 209, 0.3);
+                background: canvas;
+                color: canvastext;
+                border: 2px solid color-mix(in srgb, canvastext 30%, transparent);
                 border-radius: 16px;
                 padding: 24px;
                 max-width: 768px;
@@ -195,9 +196,9 @@
                 max-height: 80vh;
                 overflow-y: auto;
                 box-shadow:
-                    0 20px 25px -5px rgba(0, 0, 0, 0.3),
-                    0 10px 10px -5px rgba(0, 0, 0, 0.2),
-                    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+                    0 20px 25px -5px color-mix(in srgb, canvastext 30%, transparent),
+                    0 10px 10px -5px color-mix(in srgb, canvastext 20%, transparent),
+                    inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
                 animation: zoom 250ms ease-in forwards;
             `
         },
