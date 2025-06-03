@@ -5,7 +5,7 @@
 // @description  Manage and quickly apply different Project Instructions templates in Claude with enhanced selection visuals
 // @author       Aareon
 // @match        https://claude.ai/*
-// @require      file:///C:/Users/askully/Projects/UserScripts/Claude/ClaudeStyleCommon.user.js
+// @require      https://cdn.jsdelivr.net/gh/Aareon/UserScripts@main/Claude/ClaudeStyleCommon.user.js
 // @grant        none
 // @license      Personal/Educational Only – No Commercial Use
 // ==/UserScript==
@@ -676,17 +676,15 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         instructionsGroup.appendChild(instructionsLabel);
         instructionsGroup.appendChild(instructionsTextarea);
 
-        // Create actions manually instead of using ClaudeStyles
+        // Create actions using ClaudeStyles
         const actions = document.createElement('div');
         actions.className = 'modal-actions';
 
-        const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = 'Cancel';
-        cancelBtn.className = 'modal-btn';
+        const cancelBtn = window.ClaudeStyles.createButton('Cancel', 'secondary');
+        cancelBtn.className += ' modal-btn';
 
-        const saveBtn = document.createElement('button');
-        saveBtn.textContent = isEdit ? 'Save changes' : 'Save template';
-        saveBtn.className = 'modal-btn primary';
+        const saveBtn = window.ClaudeStyles.createButton(isEdit ? 'Save changes' : 'Save template', 'primary');
+        saveBtn.className += ' modal-btn primary';
 
         actions.appendChild(cancelBtn);
         actions.appendChild(saveBtn);
@@ -936,68 +934,212 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
 
     // Find the project instructions area and insert the library
     function insertLibraryInterface() {
-        // Look for the project instructions edit button
-        const editButton = document.querySelector('button[type="button"] .text-accent-secondary-000');
-
-        if (!editButton || editButton.textContent !== 'Edit') return false;
-
-        const instructionsContainer = editButton.closest('button');
-        if (!instructionsContainer) return false;
-
-        const parentContainer = instructionsContainer.parentElement;
-        if (!parentContainer) return false;
-
         // Check if library already exists
         if (document.getElementById('instructions-library')) return true;
 
-        const library = createLibraryInterface();
-        parentContainer.insertBefore(library, instructionsContainer);
+        // Prevent multiple script instances from conflicting
+        if (window.claudeInstructionsLibraryActive) {
+            return false;
+        }
+        window.claudeInstructionsLibraryActive = true;
 
-        // Populate with templates
-        refreshLibraryDisplay();
+        // Check if we're on a project page
+        const currentUrl = window.location.href;
+        if (!currentUrl.includes('/project/')) {
+            window.claudeInstructionsLibraryActive = false;
+            return false;
+        }
 
-        return true;
+        let instructionsContainer = null;
+        let parentContainer = null;
+
+        // Method 1: Look for existing instructions (Edit button)
+        const editButton = document.querySelector('button[type="button"] .text-accent-secondary-000');
+        if (editButton && editButton.textContent === 'Edit') {
+            instructionsContainer = editButton.closest('button');
+            if (instructionsContainer) {
+                parentContainer = instructionsContainer.parentElement;
+                console.log('Found existing instructions edit button');
+            }
+        }
+
+        // Method 2: Look for "Set project instructions" case
+        if (!instructionsContainer) {
+            // Search for divs containing "Set project instructions"
+            const allDivs = document.querySelectorAll('div');
+            for (const div of allDivs) {
+                const divText = div.textContent.toLowerCase();
+
+                // Check if page is still loading
+                if (divText.includes('loading')) {
+                    console.log('Page still loading, will retry...');
+                    window.claudeInstructionsLibraryActive = false;
+                    return false;
+                }
+
+                // Look for the specific "Set project instructions" text
+                if (divText.includes('set project instructions') &&
+                    !divText.includes('all projects')) {
+
+                    // Find the clickable container (should be a button or clickable div)
+                    instructionsContainer = div.closest('button') ||
+                                          div.closest('[role="button"]') ||
+                                          div.closest('div[class*="cursor-pointer"]') ||
+                                          div;
+
+                    if (instructionsContainer) {
+                        parentContainer = instructionsContainer.parentElement;
+                        console.log('Found "Set project instructions" element');
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Validate we found valid elements
+        if (!instructionsContainer || !parentContainer) {
+            console.log('No valid instructions container found');
+            window.claudeInstructionsLibraryActive = false;
+            return false;
+        }
+
+        // Validate parent-child relationship
+        if (!parentContainer.contains(instructionsContainer)) {
+            console.log('Invalid parent-child relationship');
+            window.claudeInstructionsLibraryActive = false;
+            return false;
+        }
+
+        try {
+            const library = createLibraryInterface();
+
+            // Use the same insertion method as the working version
+            parentContainer.insertBefore(library, instructionsContainer);
+            console.log('Instructions library inserted successfully using insertBefore');
+
+            // Populate with templates
+            refreshLibraryDisplay();
+            return true;
+
+        } catch (error) {
+            console.error('Error inserting library interface:', error);
+            window.claudeInstructionsLibraryActive = false;
+            return false;
+        }
     }
 
-    // Set up mutation observer for dynamic content
+    // Enhanced mutation observer with better detection
     function setupObserver() {
         const observer = new MutationObserver((mutations) => {
             let shouldCheck = false;
+            let hasProjectChange = false;
 
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach((node) => {
                         if (node.nodeType === Node.ELEMENT_NODE) {
-                            // Check if project instructions area was added
+                            // Check for project instructions area
                             if (node.querySelector &&
-                                node.querySelector('.text-accent-secondary-000')) {
+                                (node.querySelector('.text-accent-secondary-000') ||
+                                 node.querySelector('[class*="project"]') ||
+                                 node.querySelector('button[type="button"]') ||
+                                 node.textContent.toLowerCase().includes('edit') ||
+                                 node.textContent.toLowerCase().includes('instructions'))) {
                                 shouldCheck = true;
+                            }
+
+                            // Check if this is a project page change
+                            if (node.matches &&
+                                (node.matches('[class*="project"]') ||
+                                 node.matches('[data-testid*="project"]'))) {
+                                hasProjectChange = true;
                             }
                         }
                     });
                 }
+
+                // Also check for attribute changes that might indicate UI updates
+                if (mutation.type === 'attributes' &&
+                    mutation.target.matches &&
+                    (mutation.target.matches('button') ||
+                     mutation.target.matches('[class*="project"]'))) {
+                    shouldCheck = true;
+                }
             });
 
-            if (shouldCheck) {
-                setTimeout(insertLibraryInterface, 500);
+            if (shouldCheck || hasProjectChange) {
+                // Use different delays based on the type of change
+                const delay = hasProjectChange ? 2000 : 500;
+                setTimeout(() => {
+                    console.log('Observer triggered insertion attempt');
+                    insertLibraryInterface();
+                }, delay);
             }
         });
 
         observer.observe(document.body, {
             childList: true,
-            subtree: true
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'data-testid']
         });
+
+        return observer;
     }
 
-    // Initialize the script
+    // Enhanced URL change detection
+    let currentUrl = window.location.href;
+    function detectUrlChange() {
+        const newUrl = window.location.href;
+        if (newUrl !== currentUrl) {
+            console.log('URL changed from', currentUrl, 'to', newUrl);
+            currentUrl = newUrl;
+
+            // Remove existing library if present
+            const existingLibrary = document.getElementById('instructions-library');
+            if (existingLibrary) {
+                existingLibrary.remove();
+            }
+
+            // Reset the active flag
+            window.claudeInstructionsLibraryActive = false;
+
+            // Try to insert on new page after a delay
+            setTimeout(() => {
+                insertLibraryInterface();
+            }, 1500);
+        }
+    }
+
+    // Enhanced initialization with multiple retry attempts
     function init() {
         addCSS();
 
-        // Try to insert immediately
-        if (!insertLibraryInterface()) {
-            // If not found, set up observer
-            setupObserver();
-        }
+        let attempts = 0;
+        const maxAttempts = 5;
+
+        const tryInsert = () => {
+            attempts++;
+            console.log(`Library insertion attempt ${attempts}/${maxAttempts}`);
+
+            const success = insertLibraryInterface();
+
+            if (!success && attempts < maxAttempts) {
+                // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+                const delay = Math.pow(2, attempts) * 1000;
+                console.log(`Retrying in ${delay}ms...`);
+                setTimeout(tryInsert, delay);
+            } else if (success) {
+                console.log('Library successfully inserted after', attempts, 'attempts');
+            } else {
+                console.log('Failed to insert library after', maxAttempts, 'attempts');
+                // Set up observer anyway in case the page changes
+                setupObserver();
+            }
+        };
+
+        // Start trying immediately
+        tryInsert();
     }
 
     // Start when ClaudeStyles is ready
@@ -1005,16 +1147,23 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(init, 1000);
+                setupObserver();
             });
         } else {
             setTimeout(init, 1000);
+            setupObserver();
         }
 
-        // Periodic check for new project pages
+        // Enhanced periodic check with URL change detection
         setInterval(() => {
-            if (document.visibilityState === 'visible' &&
-                window.location.href.includes('/project/')) {
-                insertLibraryInterface();
+            if (document.visibilityState === 'visible') {
+                detectUrlChange();
+
+                if (window.location.href.includes('/project/') &&
+                    !document.getElementById('instructions-library')) {
+                    console.log('Periodic check: attempting to insert library');
+                    insertLibraryInterface();
+                }
             }
         }, 3000);
     });
