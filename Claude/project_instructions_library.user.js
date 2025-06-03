@@ -937,95 +937,54 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         // Check if library already exists
         if (document.getElementById('instructions-library')) return true;
 
-        // Prevent multiple script instances from conflicting
-        if (window.claudeInstructionsLibraryActive) {
-            return false;
-        }
-        window.claudeInstructionsLibraryActive = true;
-
-        // Check if we're on a project page
-        const currentUrl = window.location.href;
-        if (!currentUrl.includes('/project/')) {
-            window.claudeInstructionsLibraryActive = false;
-            return false;
-        }
-
-        let instructionsContainer = null;
-        let parentContainer = null;
-
-        // Method 1: Look for existing instructions (Edit button)
+        // Strategy 1: Look for existing project instructions (when instructions are already set)
         const editButton = document.querySelector('button[type="button"] .text-accent-secondary-000');
         if (editButton && editButton.textContent === 'Edit') {
-            instructionsContainer = editButton.closest('button');
+            const instructionsContainer = editButton.closest('button');
             if (instructionsContainer) {
-                parentContainer = instructionsContainer.parentElement;
-                console.log('Found existing instructions edit button');
-            }
-        }
-
-        // Method 2: Look for "Set project instructions" case
-        if (!instructionsContainer) {
-            // Search for divs containing "Set project instructions"
-            const allDivs = document.querySelectorAll('div');
-            for (const div of allDivs) {
-                const divText = div.textContent.toLowerCase();
-
-                // Check if page is still loading
-                if (divText.includes('loading')) {
-                    console.log('Page still loading, will retry...');
-                    window.claudeInstructionsLibraryActive = false;
-                    return false;
-                }
-
-                // Look for the specific "Set project instructions" text
-                if (divText.includes('set project instructions') &&
-                    !divText.includes('all projects')) {
-
-                    // Find the clickable container (should be a button or clickable div)
-                    instructionsContainer = div.closest('button') ||
-                                          div.closest('[role="button"]') ||
-                                          div.closest('div[class*="cursor-pointer"]') ||
-                                          div;
-
-                    if (instructionsContainer) {
-                        parentContainer = instructionsContainer.parentElement;
-                        console.log('Found "Set project instructions" element');
-                        break;
-                    }
+                const parentContainer = instructionsContainer.parentElement;
+                if (parentContainer) {
+                    const library = createLibraryInterface();
+                    parentContainer.insertBefore(library, instructionsContainer);
+                    refreshLibraryDisplay();
+                    return true;
                 }
             }
         }
 
-        // Validate we found valid elements
-        if (!instructionsContainer || !parentContainer) {
-            console.log('No valid instructions container found');
-            window.claudeInstructionsLibraryActive = false;
-            return false;
+        // Strategy 2: Look for the project knowledge container when no instructions are set
+        // Find the container with "Project knowledge" header
+        const projectKnowledgeHeader = Array.from(document.querySelectorAll('h2')).find(h2 =>
+            h2.textContent.trim() === 'Project knowledge'
+        );
+
+        if (projectKnowledgeHeader) {
+            // Navigate up to find the main container with the flex gap-5 class
+            let container = projectKnowledgeHeader;
+            while (container && !container.classList.contains('gap-5')) {
+                container = container.parentElement;
+            }
+
+            if (container && container.classList.contains('flex') && container.classList.contains('flex-col')) {
+                // This is the .mx-4.flex.flex-col.gap-5 container
+                // Insert the library as the first child
+                const library = createLibraryInterface();
+                container.insertBefore(library, container.firstChild);
+                refreshLibraryDisplay();
+                return true;
+            }
         }
 
-        // Validate parent-child relationship
-        if (!parentContainer.contains(instructionsContainer)) {
-            console.log('Invalid parent-child relationship');
-            window.claudeInstructionsLibraryActive = false;
-            return false;
-        }
-
-        try {
+        // Strategy 3: Fallback - look for the mx-4 flex flex-col gap-5 container directly
+        const flexContainer = document.querySelector('.mx-4.flex.flex-col.gap-5');
+        if (flexContainer) {
             const library = createLibraryInterface();
-
-            // Use the same insertion method as the working version
-            parentContainer.insertBefore(library, instructionsContainer);
-            console.log('Instructions library inserted successfully using insertBefore');
-
-            // Populate with templates
+            flexContainer.insertBefore(library, flexContainer.firstChild);
             refreshLibraryDisplay();
             return true;
-
-        } catch (error) {
-            console.error('Error inserting library interface:', error);
-            window.claudeInstructionsLibraryActive = false;
-            return false;
         }
+
+        return false;
     }
 
     // Enhanced mutation observer with better detection
@@ -1041,17 +1000,17 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
                             // Check for project instructions area
                             if (node.querySelector &&
                                 (node.querySelector('.text-accent-secondary-000') ||
-                                 node.querySelector('[class*="project"]') ||
-                                 node.querySelector('button[type="button"]') ||
-                                 node.textContent.toLowerCase().includes('edit') ||
-                                 node.textContent.toLowerCase().includes('instructions'))) {
+                                    node.querySelector('[class*="project"]') ||
+                                    node.querySelector('button[type="button"]') ||
+                                    node.textContent.toLowerCase().includes('edit') ||
+                                    node.textContent.toLowerCase().includes('instructions'))) {
                                 shouldCheck = true;
                             }
 
                             // Check if this is a project page change
                             if (node.matches &&
                                 (node.matches('[class*="project"]') ||
-                                 node.matches('[data-testid*="project"]'))) {
+                                    node.matches('[data-testid*="project"]'))) {
                                 hasProjectChange = true;
                             }
                         }
@@ -1062,7 +1021,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
                 if (mutation.type === 'attributes' &&
                     mutation.target.matches &&
                     (mutation.target.matches('button') ||
-                     mutation.target.matches('[class*="project"]'))) {
+                        mutation.target.matches('[class*="project"]'))) {
                     shouldCheck = true;
                 }
             });
