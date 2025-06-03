@@ -65,50 +65,50 @@
         components: {
             // Main container for dialogs/panels (matches Claude's UI)
             mainContainer: `
-                background: light-dark(rgb(255, 255, 255), rgb(31, 41, 55));
-                border: 1.5px solid light-dark(rgba(209, 213, 219, 0.8), rgba(75, 85, 99, 0.6));
+                background: rgb(255, 255, 255);
+                border: 1.5px solid rgba(209, 213, 219, 0.8);
                 border-radius: 8px;
                 box-shadow:
-                    0 2px 8px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)),
-                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.05));
-                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
+                    0 2px 8px rgba(0, 0, 0, 0.1),
+                    inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+                color: rgb(17, 24, 39);
             `,
 
             // Header sections for containers
             containerHeader: `
-                background: light-dark(rgba(249, 250, 251, 0.8), rgba(55, 65, 81, 0.8));
-                border-bottom: 1px solid light-dark(rgba(229, 231, 235, 0.8), rgba(75, 85, 99, 0.6));
+                background: rgba(249, 250, 251, 0.8);
+                border-bottom: 1px solid rgba(229, 231, 235, 0.8);
                 backdrop-filter: blur(8px);
             `,
 
             // Content sections for containers
             containerContent: `
-                background: light-dark(rgba(255, 255, 255, 0.95), rgba(31, 41, 55, 0.95));
+                background: rgba(255, 255, 255, 0.95);
                 backdrop-filter: blur(8px);
             `,
 
             // Glass morphism container (lighter, for subtle overlays)
             glassContainer: `
-                background: light-dark(rgba(255, 255, 255, 0.85), rgba(31, 41, 55, 0.85));
+                background: rgba(255, 255, 255, 0.85);
                 backdrop-filter: blur(8px);
-                border: 1.5px solid light-dark(rgba(209, 213, 219, 0.6), rgba(75, 85, 99, 0.4));
+                border: 1.5px solid rgba(209, 213, 219, 0.6);
                 border-radius: 8px;
                 box-shadow:
-                    0 2px 4px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
-                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.05));
-                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
+                    0 2px 4px rgba(0, 0, 0, 0.1),
+                    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+                color: rgb(17, 24, 39);
             `,
 
             // Alternative glass container for contrast
             contrastGlassContainer: `
-                background: light-dark(rgba(243, 244, 246, 0.9), rgba(55, 65, 81, 0.9));
+                background: rgba(243, 244, 246, 0.9);
                 backdrop-filter: blur(8px);
-                border: 1.5px solid light-dark(rgba(209, 213, 219, 0.8), rgba(75, 85, 99, 0.6));
+                border: 1.5px solid rgba(209, 213, 219, 0.8);
                 border-radius: 8px;
                 box-shadow:
-                    0 2px 4px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.25)),
-                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
-                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
+                    0 2px 4px rgba(0, 0, 0, 0.15),
+                    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+                color: rgb(17, 24, 39);
             `,
 
             // Button base styles (theme-adaptive)
@@ -127,56 +127,56 @@
                 font-size: 12px;
                 backdrop-filter: blur(4px);
                 box-shadow:
-                    0 1px 3px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)),
-                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+                    0 1px 3px rgba(0, 0, 0, 0.2),
+                    inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
             `,
 
             // Primary button (theme-adaptive)
             buttonPrimary: `
-                background: light-dark(rgb(59, 130, 246), rgb(59, 130, 246));
+                background: rgb(59, 130, 246);
                 color: white;
-                border-color: light-dark(rgba(37, 99, 235, 0.8), rgba(59, 130, 246, 0.8));
+                border-color: rgba(37, 99, 235, 0.8);
                 box-shadow:
-                    0 2px 4px light-dark(rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.4)),
+                    0 2px 4px rgba(59, 130, 246, 0.3),
                     inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
             `,
 
             // Secondary button (theme-adaptive)
             buttonSecondary: `
-                background: light-dark(rgba(255, 255, 255, 0.9), rgba(75, 85, 99, 0.8));
-                color: light-dark(rgb(17, 24, 39), rgb(209, 213, 219));
-                border-color: light-dark(rgba(209, 213, 219, 0.8), rgba(107, 114, 128, 0.8));
+                background: rgba(255, 255, 255, 0.9);
+                color: rgb(17, 24, 39);
+                border-color: rgba(209, 213, 219, 0.8);
                 box-shadow:
-                    0 1px 3px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)),
-                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
+                    0 1px 3px rgba(0, 0, 0, 0.2),
+                    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
             `,
 
             // Card base (theme-adaptive)
             cardBase: `
-                border: 1.5px solid light-dark(rgba(209, 213, 219, 0.8), rgba(75, 85, 99, 0.6));
+                border: 1.5px solid rgba(209, 213, 219, 0.8);
                 border-radius: 8px;
-                background: light-dark(rgba(249, 250, 251, 0.9), rgba(55, 65, 81, 0.9));
+                background: rgba(249, 250, 251, 0.9);
                 backdrop-filter: blur(4px);
                 box-shadow:
-                    0 1px 3px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
-                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.05));
+                    0 1px 3px rgba(0, 0, 0, 0.1),
+                    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
                 transition: all 0.2s ease;
-                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
+                color: rgb(17, 24, 39);
             `,
 
             // Form input (theme-adaptive)
             formInput: `
                 width: 100%;
                 padding: 12px;
-                border: 1.5px solid light-dark(rgba(209, 213, 219, 0.8), rgba(107, 114, 128, 0.8));
+                border: 1.5px solid rgba(209, 213, 219, 0.8);
                 border-radius: 8px;
                 font-size: 14px;
                 transition: all 0.2s ease;
-                background: light-dark(rgba(255, 255, 255, 0.9), rgba(55, 65, 81, 0.9));
-                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
+                background: rgba(255, 255, 255, 0.9);
+                color: rgb(17, 24, 39);
                 box-shadow:
-                    inset 0 1px 3px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
-                    0 1px 0 0 light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.05));
+                    inset 0 1px 3px rgba(0, 0, 0, 0.1),
+                    0 1px 0 0 rgba(255, 255, 255, 0.8);
             `,
 
             // Badge base
@@ -199,7 +199,7 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: light-dark(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
+                background-color: rgba(0, 0, 0, 0.4);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -210,9 +210,9 @@
 
             // Modal content (theme-adaptive, matches Claude's design)
             modalContent: `
-                background: light-dark(rgb(255, 255, 255), rgb(31, 41, 55));
-                color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
-                border: 2px solid light-dark(rgba(229, 231, 235, 0.8), rgba(75, 85, 99, 0.6));
+                background: rgb(255, 255, 255);
+                color: rgb(17, 24, 39);
+                border: 2px solid rgba(229, 231, 235, 0.8);
                 border-radius: 16px;
                 padding: 24px;
                 max-width: 768px;
@@ -220,9 +220,9 @@
                 max-height: 80vh;
                 overflow-y: auto;
                 box-shadow:
-                    0 20px 25px -5px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.4)),
-                    0 10px 10px -5px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)),
-                    inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.05));
+                    0 20px 25px -5px rgba(0, 0, 0, 0.15),
+                    0 10px 10px -5px rgba(0, 0, 0, 0.1),
+                    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
                 animation: zoom 250ms ease-in forwards;
             `
         },

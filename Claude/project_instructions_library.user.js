@@ -65,13 +65,13 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .instructions-library-header:hover {
-            background: light-dark(rgba(229, 231, 235, 0.8), rgba(75, 85, 99, 0.8));
+            background: rgba(229, 231, 235, 0.8);
         }
 
         .instructions-library-title {
             font-size: 12px;
             font-weight: 600;
-            color: light-dark(rgb(107, 114, 128), rgb(156, 163, 175));
+            color: rgb(107, 114, 128);
             display: flex;
             align-items: center;
             gap: 6px;
@@ -107,25 +107,25 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .instruction-template-card:hover {
-            background: light-dark(rgba(229, 231, 235, 0.8), rgba(75, 85, 99, 0.8));
+            background: rgba(229, 231, 235, 0.8);
             transform: translateY(-1px);
             box-shadow:
-                0 2px 8px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3)),
-                inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.05));
+                0 2px 8px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
         }
 
         .instruction-template-card:focus {
-            outline: 2px solid light-dark(rgb(59, 130, 246), rgb(59, 130, 246));
+            outline: 2px solid rgb(59, 130, 246);
             outline-offset: 2px;
         }
 
         .instruction-template-card.selected {
-            border-color: light-dark(rgba(59, 130, 246, 0.6), rgba(59, 130, 246, 0.6)) !important;
-            background: light-dark(rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.15)) !important;
+            border-color: rgba(59, 130, 246, 0.6) !important;
+            background: rgba(59, 130, 246, 0.1) !important;
             box-shadow:
-                0 2px 8px light-dark(rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.4)),
-                inset 0 1px 0 0 light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1)),
-                0 0 0 1px light-dark(rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.4));
+                0 2px 8px rgba(59, 130, 246, 0.3),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+                0 0 0 1px rgba(59, 130, 246, 0.3);
         }
 
         .template-checkbox {
@@ -149,19 +149,19 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .template-checkbox-button.unchecked {
-            border-color: light-dark(rgba(209, 213, 219, 0.8), rgba(107, 114, 128, 0.8));
+            border-color: rgba(209, 213, 219, 0.8);
             background: transparent;
         }
 
         .template-checkbox-button.unchecked:hover {
-            background: light-dark(rgba(249, 250, 251, 0.8), rgba(55, 65, 81, 0.8));
-            box-shadow: 0 1px 2px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+            background: rgba(249, 250, 251, 0.8);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .template-checkbox-button.checked {
-            background: light-dark(rgb(59, 130, 246), rgb(59, 130, 246));
-            border-color: light-dark(rgba(37, 99, 235, 0.8), rgba(59, 130, 246, 0.8));
-            box-shadow: 0 1px 2px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3));
+            background: rgb(59, 130, 246);
+            border-color: rgba(37, 99, 235, 0.8);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .template-checkbox-icon {
@@ -172,12 +172,12 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .template-checkbox-button.unchecked .template-checkbox-icon {
-            color: highlighttext;
+            color: white;
             visibility: hidden;
         }
 
         .template-checkbox-button.checked .template-checkbox-icon {
-            color: highlighttext;
+            color: white;
             visibility: visible;
         }
 
@@ -195,14 +195,14 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .instruction-template-card.selected .template-card-name {
-            color: light-dark(rgb(17, 24, 39), rgb(243, 244, 246));
+            color: rgb(17, 24, 39);
             font-weight: 700;
-            text-shadow: 0 1px 2px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .template-card-preview {
             font-size: 9px;
-            color: light-dark(rgb(107, 114, 128), rgb(156, 163, 175));
+            color: rgb(107, 114, 128);
             line-height: 1.3;
             overflow: hidden;
             display: -webkit-box;
@@ -211,8 +211,8 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .instruction-template-card.selected .template-card-preview {
-            color: light-dark(rgb(55, 65, 81), rgb(209, 213, 219));
-            text-shadow: 0 1px 2px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+            color: rgb(55, 65, 81);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .template-actions {
@@ -234,8 +234,8 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             height: 20px;
             border-radius: 4px;
             border: none;
-            background: color-mix(in srgb, canvastext 60%, transparent);
-            color: canvas;
+            background: rgba(107, 114, 128, 0.6);
+            color: white;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -245,15 +245,15 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .template-action-btn:hover {
-            background: color-mix(in srgb, canvastext 80%, transparent);
+            background: rgba(107, 114, 128, 0.8);
         }
 
         .template-action-btn.edit {
-            background: color-mix(in srgb, highlight 80%, transparent);
+            background: rgba(59, 130, 246, 0.8);
         }
 
         .template-action-btn.edit:hover {
-            background: color-mix(in srgb, highlight 100%, transparent);
+            background: rgba(59, 130, 246, 1);
         }
 
         .template-action-btn.delete {
@@ -268,11 +268,11 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             display: flex;
             gap: 8px;
             padding: 16px 12px;
-            border-top: 1px solid color-mix(in srgb, canvastext 30%, transparent);
-            background: color-mix(in srgb, canvas 90%, canvastext 5%);
-            backdrop-filter: blur(8px);
             margin-top: auto;
             flex-shrink: 0;
+            background: rgba(243, 244, 246, 0.8);
+            border-top: 1px solid rgba(229, 231, 235, 0.8);
+            backdrop-filter: blur(8px);
         }
 
         .library-btn {
@@ -281,12 +281,12 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .library-btn:hover {
-            background: color-mix(in srgb, canvas 75%, canvastext 15%);
-            border-color: color-mix(in srgb, canvastext 50%, transparent);
+            background: rgba(243, 244, 246, 0.9);
+            border-color: rgba(156, 163, 175, 0.9);
             transform: translateY(-1px);
             box-shadow:
-                0 2px 6px color-mix(in srgb, canvastext 30%, transparent),
-                inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                0 2px 6px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
         }
 
         .library-btn.primary {
@@ -294,11 +294,11 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .library-btn.primary:hover {
-            background: color-mix(in srgb, highlight 85%, canvastext 5%);
+            background: rgb(37, 99, 235);
             transform: translateY(-2px);
             box-shadow:
-                0 3px 8px color-mix(in srgb, highlight 40%, transparent),
-                inset 0 1px 0 0 color-mix(in srgb, highlighttext 25%, transparent);
+                0 3px 8px rgba(59, 130, 246, 0.4),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
         }
 
         .library-btn:disabled {
@@ -341,13 +341,13 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             font-family: "Styrene Display", -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 20px;
             font-weight: 500;
-            color: canvastext;
+            color: rgb(17, 24, 39);
             line-height: 1.2;
         }
 
         .modal-subtitle {
             font-size: 14px;
-            color: color-mix(in srgb, canvastext 80%, transparent);
+            color: rgb(107, 114, 128);
             line-height: 1.4;
         }
 
@@ -360,7 +360,7 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
             font-size: 14px;
             font-weight: 500;
             margin-bottom: 8px;
-            color: canvastext;
+            color: rgb(17, 24, 39);
         }
 
         .form-input {
@@ -369,24 +369,24 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .form-input:hover {
-            border-color: light-dark(rgba(156, 163, 175, 0.9), rgba(156, 163, 175, 0.9));
+            border-color: rgba(156, 163, 175, 0.9);
             box-shadow:
-                inset 0 1px 3px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
-                0 1px 0 0 light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.05)),
-                0 0 0 1px light-dark(rgba(156, 163, 175, 0.3), rgba(156, 163, 175, 0.3));
+                inset 0 1px 3px rgba(0, 0, 0, 0.1),
+                0 1px 0 0 rgba(255, 255, 255, 0.8),
+                0 0 0 1px rgba(156, 163, 175, 0.3);
         }
 
         .form-input:focus {
             outline: none;
-            border-color: light-dark(rgb(59, 130, 246), rgb(59, 130, 246));
+            border-color: rgb(59, 130, 246);
             box-shadow:
-                inset 0 1px 3px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)),
-                0 1px 0 0 light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.05)),
-                0 0 0 2px light-dark(rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.3));
+                inset 0 1px 3px rgba(0, 0, 0, 0.1),
+                0 1px 0 0 rgba(255, 255, 255, 0.8),
+                0 0 0 2px rgba(59, 130, 246, 0.3);
         }
 
         .form-input::placeholder {
-            color: light-dark(rgb(156, 163, 175), rgb(107, 114, 128));
+            color: rgb(156, 163, 175);
         }
 
         .form-textarea {
@@ -416,19 +416,19 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
         }
 
         .modal-btn:hover {
-            background: color-mix(in srgb, canvas 70%, canvastext 20%);
-            border-color: color-mix(in srgb, canvastext 50%, transparent);
+            background: rgba(229, 231, 235, 0.9);
+            border-color: rgba(156, 163, 175, 0.9);
             transform: translateY(-1px);
             box-shadow:
-                0 2px 6px color-mix(in srgb, canvastext 40%, transparent),
-                inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                0 2px 6px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
         }
 
         .modal-btn:active {
             transform: translateY(0);
             box-shadow:
-                0 1px 2px color-mix(in srgb, canvastext 40%, transparent),
-                inset 0 1px 0 0 color-mix(in srgb, canvas 100%, transparent);
+                0 1px 2px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
         }
 
         .modal-btn:disabled {
@@ -447,24 +447,24 @@ Don't change the title of scripts, or names of interfaces. Avoid things like \`E
 
         .modal-btn.primary:hover {
             transform: translateY(-2px) scale(1.02);
-            background: color-mix(in srgb, highlight 85%, canvastext 5%);
+            background: rgb(37, 99, 235);
             box-shadow:
-                0 4px 8px color-mix(in srgb, highlight 50%, transparent),
-                inset 0 1px 0 0 color-mix(in srgb, highlighttext 90%, transparent);
+                0 4px 8px rgba(59, 130, 246, 0.4),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
         }
 
         .modal-btn.primary:active {
             transform: translateY(-1px) scale(1.01);
             box-shadow:
-                0 2px 4px color-mix(in srgb, highlight 40%, transparent),
-                inset 0 1px 0 0 color-mix(in srgb, highlighttext 90%, transparent);
+                0 2px 4px rgba(59, 130, 246, 0.3),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
         }
 
         .modal-btn.primary::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(at bottom, light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), light-dark(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)));
+            background: radial-gradient(at bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
             opacity: 0;
             transition: all 200ms ease;
             transform: translateY(8px);
